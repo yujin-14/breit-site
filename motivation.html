@@ -220,6 +220,12 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
+
+/* MOTIVATION CLEANUP */
+.phase-banner,.summary-card{display:none !important;}
+.reward-target{display:block;padding-right:118px;line-height:1.6;}
+.reward-tag,.focus-tag,.lock-badge{z-index:2;}
+@media (max-width:767px){.reward-target{padding-right:0;margin-top:8px;}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -368,26 +374,31 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   const motivationKey = 'shiori_motivation_state';
 
   const defaultState = {
-    taskCount: 27,
-    streakDays: 3,
-    rewards: [
-      { id:'r1', title:'お気に入りのカフェでケーキを食べる', target:10, note:'小さめの達成をちゃんと祝う用のご褒美。', achievedDate:'7/14' },
-      { id:'r2', title:'前から気になってた映画を見に行く', target:25, note:'一区切りついた時に気分をリセットするご褒美。', achievedDate:'7/20' },
-      { id:'r3', title:'ちょっといい文房具を買う', target:50, note:'次の選考やESづくりを少し前向きにする装備投資。', achievedDate:'' },
-      { id:'r4', title:'友達と焼肉に行く', target:100, note:'大きめの節目まで走り切った時のご褒美。', achievedDate:'' }
-    ],
-    history: [
-      { title:'お気に入りのカフェでケーキを食べる（10タスク達成）', date:'7/14' },
-      { title:'前から気になってた映画を見に行く（25タスク達成）', date:'7/20' }
-    ]
+    taskCount: 0,
+    streakDays: 0,
+    rewards: [],
+    history: []
   };
 
+  const demoRewardTitles = ['お気に入りのカフェでケーキを食べる','前から気になってた映画を見に行く','ちょっといい文房具を買う','友達と焼肉に行く'];
+  const demoHistoryTitles = ['お気に入りのカフェでケーキを食べる（10タスク達成）','前から気になってた映画を見に行く（25タスク達成）'];
+
+  function sanitizeRewards(items){
+    return Array.isArray(items) ? items.filter(item => item && !demoRewardTitles.includes(item.title)) : [];
+  }
+  function sanitizeHistory(items){
+    return Array.isArray(items) ? items.filter(item => item && !demoHistoryTitles.includes(item.title)) : [];
+  }
+
   const savedState = readJson(motivationKey) || {};
+  const cleanedRewards = sanitizeRewards(savedState.rewards);
+  const cleanedHistory = sanitizeHistory(savedState.history);
+  const demoCounter = Number(savedState.taskCount) === 27 && Number(savedState.streakDays) === 3 && cleanedRewards.length === 0 && cleanedHistory.length === 0;
   const state = {
-    taskCount: Number(savedState.taskCount || defaultState.taskCount),
-    streakDays: Number(savedState.streakDays || defaultState.streakDays),
-    rewards: Array.isArray(savedState.rewards) && savedState.rewards.length ? savedState.rewards : defaultState.rewards,
-    history: Array.isArray(savedState.history) && savedState.history.length ? savedState.history : defaultState.history
+    taskCount: demoCounter ? 0 : Number(savedState.taskCount ?? defaultState.taskCount),
+    streakDays: demoCounter ? 0 : Number(savedState.streakDays ?? defaultState.streakDays),
+    rewards: cleanedRewards.length ? cleanedRewards : defaultState.rewards,
+    history: cleanedHistory.length ? cleanedHistory : defaultState.history
   };
 
   const status = {

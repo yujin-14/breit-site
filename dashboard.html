@@ -220,6 +220,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
+
+.task-empty{background:var(--paper);border:1px dashed var(--line);border-radius:14px;padding:18px;color:var(--ink-soft);font-size:13px;line-height:1.8;}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -252,43 +254,22 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
         <div class="card goal-card">
           <div class="goal-title">就活の目標</div>
-          <div class="goal-text">6月末までにサマーインターン10社にエントリーする</div>
-          <div class="goal-bar-track"><div class="goal-bar-fill"></div></div>
-          <div class="goal-meta"><span>4 / 10 社</span><span>目標変更 →</span></div>
+          <div class="goal-text">まだ目標を設定していません</div>
+          <div class="goal-bar-track"><div class="goal-bar-fill" style="width:0%"></div></div>
+          <div class="goal-meta"><span>0 / 0 社</span><span>目標を決めるとここに反映されます</span></div>
         </div>
 
         <div class="card">
           <div class="card-head">
-            <div class="card-title">今日・今週のタスク <span class="card-num">05</span></div>
+            <div class="card-title">今日・今週のタスク <span class="card-num">00</span></div>
             <a class="add-btn" href="schedule.html#open-add">+ タスクを追加</a>
           </div>
-          <div class="task done">
-            <div class="check done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="task-body"><div class="task-title">自己分析（価値観型・簡易）をやってみる</div><div class="task-meta"><span class="badge personal">個人</span></div></div>
-          </div>
-          <div class="task">
-            <div class="check"></div>
-            <div class="task-body"><div class="task-title">〇〇商事 ES提出</div><div class="task-meta"><span class="badge company">〇〇商事</span><span class="task-date mono">7/23 締切</span></div></div>
-          </div>
-          <div class="task">
-            <div class="check"></div>
-            <div class="task-body"><div class="task-title">△△製作所 一次面接</div><div class="task-meta"><span class="badge company">△△製作所</span><span class="task-date mono">7/25 14:00</span></div></div>
-          </div>
-          <div class="task">
-            <div class="check"></div>
-            <div class="task-body"><div class="task-title">合同企業説明会（マイナビEXPO）に参加</div><div class="task-meta"><span class="badge event">イベント</span><span class="task-date mono">7/27 10:00</span></div></div>
-          </div>
-          <div class="task">
-            <div class="check"></div>
-            <div class="task-body"><div class="task-title">業界研究：メーカー3社を比較してみる</div><div class="task-meta"><span class="badge personal">個人</span></div></div>
-          </div>
+          <div class="task-empty">まだ予定がありません。予定管理から追加すると、ここに表示されます。</div>
         </div>
 
         <div class="card">
           <div class="card-head"><div class="card-title">気になる企業</div><a class="card-link" href="companies_list.html">気になる企業の一覧へ →</a></div>
-          <div class="company-row"><div class="company-name">〇〇商事</div><div class="step-pill hot">ES提出</div></div>
-          <div class="company-row"><div class="company-name">△△製作所</div><div class="step-pill warm">一次面接</div></div>
-          <div class="company-row"><div class="company-name">□□システムズ</div><div class="step-pill">気になる</div></div>
+          <div class="task-empty">まだ企業が登録されていません。企業一覧から追加すると、ここに表示されます。</div><div class="step-pill">気になる</div></div>
         </div>
 
       </div>

@@ -195,6 +195,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
+
+.empty-table{padding:22px;border:1px dashed var(--line);border-radius:16px;color:var(--ink-soft);background:var(--paper);line-height:1.8;}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -258,8 +260,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
     <div class="toolbar">
       <div class="tabs">
-        <div class="tab sel">選考中（5）</div>
-        <div class="tab">アーカイブ（2）</div>
+        <div class="tab sel">選考中（0）</div>
+        <div class="tab">アーカイブ（0）</div>
       </div>
       <div class="filter-row">
         <button class="filter-chip sel" data-filter="all">すべて</button>
@@ -310,38 +312,9 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   const visionDraft = readJson('shiori_vision_draft');
   const companyValuesDraft = readJson('shiori_company_values_draft');
 
-  const companies = [
-    {
-      name:'〇〇商事', step:'ES提出', stepClass:'hot', next:'ES締切 7/23',
-      traits:['挑戦','成長機会','裁量がある','再エネ事業'],
-      risks:['評価基準が曖昧'],
-      detail:'company_detail.html'
-    },
-    {
-      name:'△△製作所', step:'一次面接', stepClass:'warm', next:'一次面接 7/25 14:00',
-      traits:['堅実','チームワーク','教育体制','安定'],
-      risks:['意思決定が遅い'],
-      detail:'company_detail.html'
-    },
-    {
-      name:'□□システムズ', step:'気になる', stepClass:'', next:'—',
-      traits:['若手裁量','スピード感','ベンチャー気質'],
-      risks:['長時間労働の可能性'],
-      detail:'company_detail.html'
-    },
-    {
-      name:'◇◇ホールディングス', step:'エントリー', stepClass:'', next:'エントリー締切 7/30',
-      traits:['制度充実','大手基盤','配属幅が広い'],
-      risks:['年功序列の色が強い'],
-      detail:'company_detail.html'
-    },
-    {
-      name:'✕✕食品', step:'内定', stepClass:'done', next:'—',
-      traits:['人の良さ','生活者視点','安定'],
-      risks:['変化速度が遅い'],
-      detail:'company_detail.html'
-    }
-  ];
+  const demoCompanyNames = ['〇〇商事','△△製作所','□□システムズ','◇◇ホールディングス','✕✕食品'];
+  const savedCompanyList = readJson('shiori_company_list');
+  const companies = Array.isArray(savedCompanyList) ? savedCompanyList.filter(company => company && !demoCompanyNames.includes(company.name)) : [];
 
   const musts = getBucket('Must');
   const wants = getBucket('Want');
@@ -402,6 +375,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   function renderRows(filter='all'){
     const rows = document.getElementById('rows');
     rows.innerHTML = '';
+    if(!companies.length){
+      rows.innerHTML = '<div class="empty-table">まだ企業が登録されていません。気になる企業を追加すると、ここに一覧表示されます。</div>';
+      return;
+    }
     companies.forEach(company => {
       const fit = evaluate(company);
       if(filter !== 'all' && fit.level !== filter) return;

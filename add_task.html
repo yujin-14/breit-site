@@ -483,14 +483,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   const tasksKey = 'shiori_tasks';
   const companyListKey = 'shiori_company_list';
 
-  const companyCatalogDefault = [
-    {name:'〇〇商事', step:'ES提出', traits:['挑戦','成長機会','裁量がある','再エネ事業'], risks:['評価基準が曖昧']},
-    {name:'△△製作所', step:'一次面接', traits:['堅実','チームワーク','教育体制','安定'], risks:['意思決定が遅い']},
-    {name:'□□システムズ', step:'気になる', traits:['若手裁量','スピード感','ベンチャー気質'], risks:['長時間労働の可能性']},
-    {name:'◇◇ホールディングス', step:'エントリー', traits:['制度充実','大手基盤','配属幅が広い'], risks:['年功序列の色が強い']}
-  ];
+  const companyCatalogDefault = [];
+  const demoCompanyNames = ['〇〇商事','△△製作所','□□システムズ','◇◇ホールディングス','✕✕食品'];
   const savedCompanyCatalog = readJson(companyListKey);
-  const companies = Array.isArray(savedCompanyCatalog) && savedCompanyCatalog.length ? savedCompanyCatalog : companyCatalogDefault;
+  const companies = Array.isArray(savedCompanyCatalog) ? savedCompanyCatalog.filter(company => company && !demoCompanyNames.includes(company.name)) : companyCatalogDefault;
 
   const draft = readJson(addTaskDraftKey) || {};
   const status = {

@@ -233,9 +233,9 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
     <div class="sub-head">COMPANY DETAIL</div>
     <div class="top-row">
-      <h1 id="companyNameHeading">〇〇商事</h1>
+      <h1 id="companyNameHeading">企業詳細</h1>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <span class="cur-step">現在：ES提出</span>
+        <span class="cur-step">現在：未設定</span>
         <button class="archive-btn" id="archiveBtn">アーカイブする</button>
       </div>
     </div>
@@ -353,7 +353,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <div class="card-title">企業研究メモ</div>
           <div class="memo-field">
             <div class="memo-label">📋 事業内容</div>
-            <textarea class="memo-textarea" id="businessContent" placeholder="どんな事業をしている会社か">総合商社。生活産業・エネルギー・化学品など幅広い分野を扱う。近年は再エネ事業にも力を入れている。</textarea>
+            <textarea class="memo-textarea" id="businessContent" placeholder="どんな事業をしている会社か"></textarea>
           </div>
           <div class="memo-field">
             <div class="memo-label">💡 企業の強み・特徴</div>
@@ -378,7 +378,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 </div>
 
 <script>
-  const companyName = '〇〇商事';
+  const companyName = 'company_detail_default';
   const detailKey = `shiori_company_detail_${companyName}`;
 
   function readJson(key){

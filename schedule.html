@@ -398,14 +398,9 @@ button.add-btn{border:none;cursor:pointer;}
 
 <script>
   const TODAY = '2026-07-22';
-  const DEFAULT_TASKS = [
-    { id:'base-1', title:'自己分析（価値観型・簡易）をやってみる', type:'personal', date:'2026-07-21', time:'', done:true, memo:'自己分析の入口づくり。', reason:'入口づくり', analysisLink:'type', source:'template' },
-    { id:'base-2', title:'業界研究：メーカー3社を比較してみる', type:'personal', date:'2026-07-22', time:'', done:false, memo:'比較視点を増やす。', reason:'企業研究', analysisLink:'action', source:'template' },
-    { id:'base-3', title:'〇〇商事 ES提出', type:'company', company:'〇〇商事', date:'2026-07-23', time:'', done:false, memo:'締切対応。', reason:'選考進行', analysisLink:'action', source:'template' },
-    { id:'base-4', title:'△△製作所 一次面接', type:'company', company:'△△製作所', date:'2026-07-25', time:'14:00', done:false, memo:'面接準備も逆算したい。', reason:'選考進行', analysisLink:'action', source:'template' },
-    { id:'base-5', title:'合同企業説明会（マイナビEXPO）に参加', type:'event', date:'2026-07-27', time:'10:00', done:false, memo:'比較候補を広げる。', reason:'接点づくり', analysisLink:'action', source:'template' },
-    { id:'base-6', title:'◇◇ホールディングス エントリー締切', type:'company', company:'◇◇ホールディングス', date:'2026-07-30', time:'', done:false, memo:'エントリー対応。', reason:'締切管理', analysisLink:'action', source:'template' }
-  ];
+  const DEFAULT_TASKS = [];
+  const demoTaskTitles = ['自己分析（価値観型・簡易）をやってみる','業界研究：メーカー3社を比較してみる','〇〇商事 ES提出','△△製作所 一次面接','合同企業説明会（マイナビEXPO）に参加','◇◇ホールディングス エントリー締切'];
+  const demoCompanyNames = ['〇〇商事','△△製作所','□□システムズ','◇◇ホールディングス','✕✕食品'];
 
   const typeResult = readJson('shiori_type_result');
   const valueDraft = readJson('shiori_katikan_draft');
@@ -413,14 +408,10 @@ button.add-btn{border:none;cursor:pointer;}
   const companyDraft = readJson('shiori_company_values_draft');
   const motivationState = readJson('shiori_motivation_state') || {};
   const taskStateKey = 'shiori_tasks';
-  const savedTasks = Array.isArray(readJson(taskStateKey)) ? readJson(taskStateKey) : [];
+  const savedTasks = Array.isArray(readJson(taskStateKey)) ? readJson(taskStateKey).filter(task => task && !demoTaskTitles.includes(task.title)) : [];
 
-  const companies = [
-    {name:'〇〇商事', step:'ES提出', next:'ES締切 7/23', traits:['挑戦','成長機会','裁量がある','再エネ事業'], risks:['評価基準が曖昧']},
-    {name:'△△製作所', step:'一次面接', next:'一次面接 7/25 14:00', traits:['堅実','チームワーク','教育体制','安定'], risks:['意思決定が遅い']},
-    {name:'□□システムズ', step:'気になる', next:'—', traits:['若手裁量','スピード感','ベンチャー気質'], risks:['長時間労働の可能性']},
-    {name:'◇◇ホールディングス', step:'エントリー', next:'エントリー締切 7/30', traits:['制度充実','大手基盤','配属幅が広い'], risks:['年功序列の色が強い']}
-  ];
+  const savedCompanyCatalog = readJson('shiori_company_list');
+  const companies = Array.isArray(savedCompanyCatalog) ? savedCompanyCatalog.filter(company => company && !demoCompanyNames.includes(company.name)) : [];
 
   function readJson(key){
     try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
