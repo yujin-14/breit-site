@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breit - 予定</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F8F5; --ink:#1A2238; --ink-soft:#4A5170;
+    --teal:#2F7D6B; --teal-deep:#245F52; --coral:#E8674F; --amber:#D9A441; --rose:#C85D73;
+    --line:#DEDCD0; --card:#FFFFFF; --mint:#EAF2F0; --sand:#FFF3E1;
+    --shadow:0 1px 2px rgba(26,34,56,.04),0 6px 16px rgba(26,34,56,.06);
+  }
+  *{box-sizing:border-box;min-width:0;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Zen Kaku Gothic New',sans-serif;-webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .serif{font-family:'Shippori Mincho B1',serif;}
+  .app{display:grid;grid-template-columns:76px 1fr;min-height:100vh;}
+
+  .nav{background:var(--ink);padding:24px 0;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .nav-logo{width:36px;height:36px;border-radius:8px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:16px;margin-bottom:28px;flex-shrink:0;}
+  .nav-items{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center;}
+  .nav-item{width:52px;padding:10px 0 8px;border-radius:10px 10px 0 0;display:flex;flex-direction:column;align-items:center;gap:4px;color:#8891AC;cursor:pointer;position:relative;flex-shrink:0;}
+  .nav-item svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;}
+  .nav-item span{font-size:9.5px;white-space:nowrap;}
+  .nav-item.active{color:#fff;background:var(--teal);}
+  .nav-item.active::after{content:"";position:absolute;right:-6px;top:0;bottom:0;width:6px;background:var(--teal);clip-path:polygon(0 0,100% 50%,0 100%);}
+  .nav-item.disabled{color:#4A5170;cursor:default;}
+  .nav-tag{margin-top:auto;writing-mode:vertical-rl;color:#5A6382;font-size:9px;letter-spacing:.15em;padding-top:20px;flex-shrink:0;}
+
+  main{padding:clamp(20px,4vw,40px) clamp(16px,5vw,56px) 88px;max-width:1240px;width:100%;}
+  .top-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-end;margin-bottom:18px;}
+  .eyebrow{font-size:12px;color:var(--teal-deep);letter-spacing:.14em;font-weight:700;margin-bottom:8px;}
+  h1{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:clamp(24px,3vw,32px);margin:0;line-height:1.4;}
+  .lead{margin-top:10px;font-size:13.8px;line-height:1.85;color:var(--ink-soft);max-width:78ch;}
+  .top-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .add-btn,.ghost-btn,.link-btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 18px;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;font-family:'Zen Kaku Gothic New';cursor:pointer;}
+  .add-btn{background:var(--teal);color:#fff;border:none;}
+  .ghost-btn{background:#fff;color:var(--ink-soft);border:1.5px solid var(--line);}
+  .link-btn{background:#EAF2F0;color:var(--teal-deep);border:none;}
+
+  .phase-banner{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:18px;}
+  .phase-chip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--mint);color:var(--teal-deep);white-space:nowrap;}
+  .phase-text{font-size:12.5px;color:var(--ink-soft);line-height:1.8;}
+  .phase-text b{color:var(--ink);}
+
+  .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+  .summary-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);}
+  .summary-label{font-size:11px;color:var(--ink-soft);font-weight:700;letter-spacing:.06em;margin-bottom:8px;}
+  .summary-main{font-family:'Shippori Mincho B1',serif;font-size:17px;font-weight:700;line-height:1.6;word-break:break-word;}
+  .summary-sub{font-size:12px;color:var(--ink-soft);line-height:1.75;margin-top:6px;white-space:pre-wrap;}
+
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(320px,.82fr);gap:18px;margin-bottom:18px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);}
+  .hero-card{padding:22px 24px;background:linear-gradient(135deg,#FFFFFF 0%,#F6FBF9 100%);}
+  .hero-head{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+  .hero-title{font-family:'Shippori Mincho B1',serif;font-size:18px;font-weight:700;}
+  .hero-sub{font-size:12.5px;color:var(--ink-soft);line-height:1.8;max-width:46ch;}
+  .hero-chip{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;font-size:11px;font-weight:700;background:var(--sand);color:#8A6D1B;}
+  .mini-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+  .metric{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .metric-num{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--teal);line-height:1;}
+  .metric-label{font-size:11.5px;color:var(--ink-soft);line-height:1.6;margin-top:6px;}
+  .hero-note{font-size:12.5px;color:var(--ink-soft);line-height:1.85;}
+
+  .coach-card{padding:22px;display:flex;flex-direction:column;gap:14px;}
+  .coach-label{font-size:11px;color:var(--teal-deep);letter-spacing:.14em;font-weight:700;}
+  .coach-title{font-family:'Shippori Mincho B1',serif;font-size:20px;font-weight:700;line-height:1.65;}
+  .coach-copy{font-size:13px;color:var(--ink-soft);line-height:1.85;white-space:pre-wrap;}
+  .coach-tags{display:flex;flex-wrap:wrap;gap:8px;}
+  .coach-tag{font-size:11px;padding:5px 10px;border-radius:999px;background:var(--paper);color:var(--ink-soft);border:1px solid var(--line);}
+
+  .urgent-card{padding:18px 20px;margin-bottom:18px;}
+  .section-head{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .section-title{font-family:'Shippori Mincho B1',serif;font-size:18px;font-weight:700;}
+  .section-sub{font-size:12px;color:var(--ink-soft);}
+  .urgent-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .urgent-item{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .urgent-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px;}
+  .urgent-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--coral);}
+  .urgent-pill{font-size:10px;font-weight:700;padding:4px 8px;border-radius:999px;white-space:nowrap;}
+  .urgent-pill.company{background:var(--mint);color:var(--teal-deep);}
+  .urgent-pill.event{background:var(--sand);color:#8A6D1B;}
+  .urgent-pill.personal{background:#F1EEE3;color:#8A7A3E;}
+  .urgent-title{font-size:13px;font-weight:700;line-height:1.7;}
+  .urgent-meta{font-size:11.5px;color:var(--ink-soft);line-height:1.75;margin-top:6px;}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .view-toggle{display:flex;background:var(--card);border:1px solid var(--line);border-radius:100px;padding:3px;box-shadow:var(--shadow);}
+  .view-btn{padding:8px 18px;border-radius:100px;font-size:13px;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+  .view-btn.sel{background:var(--ink);color:#fff;}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;}
+  .filter-chip{padding:7px 14px;border-radius:100px;font-size:12.5px;font-weight:700;color:var(--ink-soft);border:1.4px solid var(--line);cursor:pointer;background:var(--card);}
+  .filter-chip.sel{border-color:var(--teal);background:var(--mint);color:var(--teal-deep);}
+
+  .content-grid{display:grid;grid-template-columns:minmax(0,1.14fr) minmax(320px,.86fr);gap:18px;align-items:start;}
+  .schedule-card,.side-card{padding:20px 22px;}
+  .day-group{margin-bottom:22px;}
+  .day-group:last-child{margin-bottom:0;}
+  .day-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .today-tag{background:var(--coral);color:#fff;font-family:'Zen Kaku Gothic New';font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;}
+  .day-card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+  .task{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-bottom:1px dashed var(--line);flex-wrap:wrap;}
+  .task:last-child{border-bottom:none;}
+  .check{width:19px;height:19px;border-radius:6px;border:1.6px solid #C7C4B4;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .check.done{background:var(--teal);border-color:var(--teal);}
+  .check.done svg{width:12px;height:12px;stroke:#fff;stroke-width:3;}
+  .task-body{flex:1;min-width:180px;}
+  .task-top{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:flex-start;}
+  .task-title{font-size:14.5px;font-weight:500;line-height:1.7;word-break:break-word;}
+  .task.done .task-title{color:#A8ABBB;text-decoration:line-through;}
+  .task-meta{font-size:11.5px;color:var(--ink-soft);margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .badge{font-size:10.5px;padding:2px 8px;border-radius:5px;font-weight:700;white-space:nowrap;}
+  .badge.company{background:var(--mint);color:var(--teal-deep);}
+  .badge.event{background:var(--sand);color:#8A5A20;}
+  .badge.personal{background:#F1EEE3;color:#8A7A3E;}
+  .task-time{font-family:'JetBrains Mono',monospace;color:var(--ink-soft);white-space:nowrap;}
+  .task-note{font-size:12px;color:var(--ink-soft);line-height:1.75;margin-top:6px;white-space:pre-wrap;}
+  .task-reason{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:var(--teal-deep);background:#EAF2F0;padding:4px 8px;border-radius:999px;margin-top:8px;}
+
+  #timelineView{display:none;}
+  .timeline{position:relative;padding-left:26px;}
+  .timeline::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:1.5px;background:var(--line);}
+  .tl-item{position:relative;padding-bottom:18px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-item::before{content:"";position:absolute;left:-26px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--paper);border:2px solid var(--teal);}
+  .tl-item.done::before{background:var(--teal);}
+  .tl-item.today::before{border-color:var(--coral);}
+  .tl-when{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin-bottom:4px;}
+  .tl-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);}
+  .tl-title{font-size:14px;font-weight:600;line-height:1.7;margin-bottom:6px;word-break:break-word;}
+  .tl-sub{font-size:12px;color:var(--ink-soft);line-height:1.7;white-space:pre-wrap;}
+
+  .mini-list{display:flex;flex-direction:column;gap:10px;}
+  .mini-row{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--paper);}
+  .mini-row strong{display:block;font-size:13px;margin-bottom:4px;color:var(--ink);}
+  .mini-row span{font-size:12px;color:var(--ink-soft);line-height:1.75;display:block;}
+  .fit-row{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--paper);margin-bottom:10px;}
+  .fit-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px;}
+  .fit-name{font-size:13px;font-weight:700;}
+  .fit-pill{font-size:10.5px;font-weight:700;padding:4px 8px;border-radius:999px;white-space:nowrap;}
+  .fit-pill.good{background:var(--mint);color:var(--teal-deep);}
+  .fit-pill.mid{background:var(--sand);color:#8A6D1B;}
+  .fit-pill.bad{background:#FDECE8;color:#A84B37;}
+  .fit-pill.none{background:#EFEDE5;color:#6B6E7E;}
+  .fit-reason{font-size:12px;color:var(--ink-soft);line-height:1.75;}
+  .empty-box{padding:16px;border:1px dashed var(--line);border-radius:14px;background:var(--paper);font-size:12.5px;color:var(--ink-soft);line-height:1.8;}
+
+  @media (max-width:1080px){
+    .summary-grid,.urgent-list{grid-template-columns:1fr 1fr;}
+    .hero-grid,.content-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:767px){
+    .app{grid-template-columns:1fr;}
+    .nav{flex-direction:row;padding:12px 14px;overflow-x:auto;justify-content:flex-start;gap:4px;position:sticky;top:0;z-index:10;}
+    .nav-logo{margin-bottom:0;margin-right:8px;}
+    .nav-items{flex-direction:row;width:auto;gap:4px;}
+    .nav-item{width:auto;flex-direction:row;padding:8px 10px;border-radius:9px;gap:6px;}
+    .nav-item.active::after{display:none;}
+    .nav-item span{font-size:11px;}
+    .nav-tag{display:none;}
+    main{padding:20px 16px 60px;}
+    .summary-grid,.urgent-list,.mini-metrics{grid-template-columns:1fr;}
+  }
+
+/* BREIT BRAND */
+.nav-logo{background:transparent !important;border-radius:0 !important;width:44px !important;height:44px !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;}
+.nav-logo img{width:100%;height:100%;object-fit:contain;display:block;}
+.brand-inline{display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.brand-inline img{display:block;height:auto;}
+
+
+/* BREIT BRAND SYSTEM */
+.nav-logo{background:transparent !important;border-radius:0 !important;width:44px !important;height:44px !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:visible !important;}
+.nav-logo .breit-svg{width:100% !important;height:100% !important;display:block;}
+.breit-lockup{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.breit-lockup--mono .breit-svg{width:58px;height:58px;flex:0 0 auto;}
+.breit-lockup__word{font-family:'Cormorant Garamond','Shippori Mincho B1',serif;font-size:clamp(32px,4vw,48px);font-weight:600;letter-spacing:.02em;color:#2A2620;line-height:1;}
+.breit-lockup__sub{font-size:12px;color:#6B675F;letter-spacing:.12em;line-height:1.7;}
+
+
+/* FINAL UI POLISH */
+:root{
+  --shadow-soft:0 1px 2px rgba(26,34,56,.04),0 12px 28px rgba(26,34,56,.08);
+  --surface-gap:clamp(18px,2.2vw,24px);
+}
+body{line-height:1.6;}
+.app{grid-template-columns:84px minmax(0,1fr) !important;}
+.nav{padding:26px 0 18px !important;gap:8px !important;}
+.nav-logo{width:48px !important;height:48px !important;margin-bottom:24px !important;}
+.nav-items{gap:8px !important;}
+.nav-item{width:56px !important;padding:11px 0 10px !important;border-radius:14px 14px 0 0 !important;transition:background-color .18s ease,color .18s ease,transform .18s ease;}
+.nav-item:hover{transform:translateY(-1px);}
+.nav-item svg{width:20px !important;height:20px !important;}
+.nav-item span{font-size:10px !important;letter-spacing:.03em !important;}
+.nav-tag{padding-top:22px !important;line-height:1.55;}
+main{padding:clamp(28px,4.6vw,52px) clamp(22px,5vw,60px) 96px !important;max-width:1240px !important;}
+.top-row{gap:20px !important;align-items:flex-end !important;margin-bottom:clamp(20px,3vw,28px) !important;}
+.greeting-eyebrow,.eyebrow,.coach-label,.cta-eyebrow,.label,.summary-label,.mini-label,.section-sub,.phase-chip,.chip{letter-spacing:.12em;}
+h1,h1.greeting,.greeting{line-height:1.34 !important;letter-spacing:.01em;}
+.lead,.hero-sub,.phase-text,.banner-text,.card-copy,.summary-sub,.mini-sub,.hero-note,.coach-copy,.cta-sub,.task-note,.fit-reason,.guide-text,.history-empty,.fw-sub,.sub,.banner-text,.check-text,.tl-sub,.insight-body,.hero-caption{line-height:1.9 !important;}
+.grid,.stack,.summary-grid,.hero-grid,.content-grid,.bottom-grid,.matrix,.insight-grid,.reward-grid,.urgent-list,.guide-list,.history-list,.mini-list,.fw-list,.feature-list{gap:var(--surface-gap) !important;}
+.card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.phase-banner,.banner,.goal-card,.cta,.hero-card,.reward-card,.summary-card,.urgent-card{border-radius:20px !important;box-shadow:var(--shadow-soft) !important;}
+.card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.urgent-card{padding:clamp(20px,3vw,28px) !important;}
+.hero-card,.cta,.goal-card{overflow:hidden;}
+.card-head,.section-head,.hero-head{margin-bottom:16px !important;}
+.card-title,.section-title,.hero-title,.coach-title,.cta-title{letter-spacing:.01em;}
+.task,.company-row,.fw-row,.guide-item,.check-item,.history-row,.fit-row,.mini-row,.urgent-item,.metric,.mini,.insight-box,.tl-card,.day-card,.story-pill,.band-card{border-radius:16px !important;}
+.task,.company-row{padding-left:8px !important;padding-right:8px !important;}
+.task-title,.urgent-title,.fit-name,.history-title,.company-name,.tl-title,.fw-name,.main-val,.summary-main,.mini-main{line-height:1.7 !important;}
+.add-btn,.ghost-btn,.link-btn,.cta-btn,.btn,.nav-cta{min-height:44px !important;padding:12px 18px !important;border-radius:12px !important;}
+.view-btn,.filter-chip,.note-chip,.cta-chip,.coach-tag,.hero-chip,.band-chip,.phase-chip,.chip,.step-pill,.fit-pill,.badge,.urgent-pill,.status{border-radius:999px !important;}
+a,button,[role="button"],.nav-item,.filter-chip,.view-btn,.check{transition:all .18s ease;}
+a:hover,button:hover,[role="button"]:hover{filter:saturate(1.02);}
+:focus-visible{outline:2px solid rgba(47,125,107,.45);outline-offset:2px;}
+table{border-radius:20px !important;overflow:hidden;}
+th,td{padding:14px 15px !important;line-height:1.8 !important;}
+@media (max-width:1080px){
+  main{padding-inline:20px !important;}
+}
+@media (max-width:767px){
+  .app{grid-template-columns:1fr !important;}
+  .nav{padding:10px 12px !important;gap:6px !important;}
+  .nav-logo{width:40px !important;height:40px !important;margin-bottom:0 !important;margin-right:10px !important;}
+  .nav-items{gap:6px !important;}
+  .nav-item{width:auto !important;padding:9px 11px !important;border-radius:12px !important;}
+  .nav-item:hover{transform:none;}
+  .nav-item span{font-size:11px !important;}
+  .nav-tag{display:none !important;}
+  main{padding:18px 14px 56px !important;}
+  .top-row{gap:14px !important;}
+  .grid,.summary-grid,.hero-grid,.content-grid,.bottom-grid,.matrix,.insight-grid,.reward-grid,.urgent-list,.hero-metrics,.mini-metrics{gap:12px !important;}
+  .card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.urgent-card{padding:18px !important;}
+  .task,.company-row,.history-row,.guide-item,.check-item,.fit-row,.urgent-item{padding:14px !important;}
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+  <nav class="nav">
+    <div class="nav-logo" aria-label="Breit"><svg class="breit-svg breit-svg-a3" width="140" height="140" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:594:20:2" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:140px;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:none;direction:ltr;display:block;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:140px;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:140px;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:auto;min-height:auto;min-inline-size:auto;min-width:auto;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:hidden;overflow-clip-margin:content-box;overflow-inline:hidden;overflow-wrap:normal;overflow-x:hidden;overflow-y:hidden;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:70px 70px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:none;stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:1px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:70px 70px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:140px;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"><path d="M 28 52 A 12 12 0 0 1 52 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:718:22:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 28 52 A 12 12 0 0 1 52 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><path d="M 20 52 A 20 20 0 0 1 60 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" opacity="0.75" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:849:24:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 20 52 A 20 20 0 0 1 60 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:0.75;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><path d="M 12 52 A 28 28 0 0 1 68 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" opacity="0.5" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:996:26:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 12 52 A 28 28 0 0 1 68 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:0.5;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><circle cx="40" cy="52" r="2.2" fill="#3d5c3a" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:1146:28:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:40px;cy:52px;d:none;direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:rgb(61, 92, 58);fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:2.2px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:none;stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:1px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/></svg></div>
+    <div class="nav-items">
+      <div class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg><span>ホーム</span></div>
+      <div class="nav-item active"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>予定</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg><span>企業</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>自己分析</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>モチベ</span></div>
+      <div class="nav-item disabled"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><span>PF</span></div>
+    </div>
+    <div class="nav-tag mono">BREIT · MVP</div>
+  </nav>
+
+  <main>
+    <div class="top-row">
+      <div>
+        <div class="eyebrow">SCHEDULE</div>
+        <h1>予定を、自己分析ベースで優先順位づけ。</h1>
+        <p class="lead">今は <b>自己分析の保存結果を企業研究・応募準備・日々の行動に落とし込む段階</b>。この予定画面では、完了済みの分析内容を使って「今日やる意味」まで見えるようにして、予定がただのTodoで終わらない設計に寄せています。</p>
+      </div>
+      <div class="top-actions">
+        <a class="ghost-btn" href="final_integration_check.html">最終統合チェックを見る</a>
+        <a class="add-btn" href="add_task.html">＋ 予定を追加</a>
+      </div>
+    </div>
+
+    <div class="phase-banner">
+      <span class="phase-chip">2026-07-22 時点</span>
+      <div class="phase-text"><b>いま</b>：保存連携の土台はかなり完成、次は予定管理・企業研究・志望動機づくりへ反映する段階。<b>過去に整えたもの</b>：自己分析4モジュール、ダッシュボード、企業一覧/詳細、モチベ、予定追加。<b>この先</b>：実運用しながらリンク・保存キー・表示崩れを最終確認していくフェーズ。</div>
+    </div>
+
+    <section class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">自己分析進捗</div>
+        <div class="summary-main" id="summaryProgress">0 / 4 完了</div>
+        <div class="summary-sub" id="summaryProgressSub">まずはタイプ診断から</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">最重要価値観</div>
+        <div class="summary-main" id="summaryPrimary">未設定</div>
+        <div class="summary-sub" id="summaryPrimarySub">行動の納得感につながる軸</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">次に置くべき予定</div>
+        <div class="summary-main" id="summaryNext">タイプ診断</div>
+        <div class="summary-sub" id="summaryNextSub">未着手なら入口づくり優先</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">仕事選びのMust</div>
+        <div class="summary-main" id="summaryMust">未設定</div>
+        <div class="summary-sub" id="summaryMustSub">企業比較フェーズで効くやつ</div>
+      </div>
+    </section>
+
+    <section class="hero-grid">
+      <div class="card hero-card">
+        <div class="hero-head">
+          <div>
+            <div class="hero-title">今日の予定設計サマリー</div>
+            <div class="hero-sub">期日が近いもの、自己分析の続きとして必要なもの、企業比較に必要なものをまとめて見える化。完了にするとモチベページ側のタスク数にも連動します。</div>
+          </div>
+          <div class="hero-chip" id="heroChip">行動化フェーズ</div>
+        </div>
+        <div class="mini-metrics">
+          <div class="metric">
+            <div class="metric-num" id="metricTaskTotal">0</div>
+            <div class="metric-label">表示中の予定数</div>
+          </div>
+          <div class="metric">
+            <div class="metric-num" id="metricUrgent">0</div>
+            <div class="metric-label">3日以内の予定</div>
+          </div>
+          <div class="metric">
+            <div class="metric-num" id="metricDone">0</div>
+            <div class="metric-label">完了済み予定</div>
+          </div>
+        </div>
+        <div class="hero-note" id="heroNote">まずは未着手の自己分析タスクから整えると、後の企業比較がかなりラクになるよ。</div>
+      </div>
+
+      <div class="card coach-card">
+        <div class="coach-label">SCHEDULE COACH</div>
+        <div class="coach-title" id="coachTitle">今の段階に合う予定の置き方でいこ</div>
+        <div class="coach-copy" id="coachCopy">自己分析の保存状況に応じて、ここに「今のあなた向けの予定設計方針」が出ます。</div>
+        <div class="coach-tags" id="coachTags"></div>
+        <div class="top-actions" style="margin-top:auto;">
+          <a class="link-btn" id="coachCta" href="add_task.html">おすすめ予定を追加する →</a>
+          <a class="ghost-btn" id="nextPageCta" href="companies_list.html">企業一覧へ →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card urgent-card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">直近で見ておきたい予定</div>
+          <div class="section-sub">今日から3日以内 or 自己分析導線上で次に必要なものを上に出す</div>
+        </div>
+      </div>
+      <div class="urgent-list" id="urgentList"></div>
+    </section>
+
+    <div class="toolbar">
+      <div class="view-toggle">
+        <div class="view-btn sel" id="btnList">リスト</div>
+        <div class="view-btn" id="btnTimeline">タイムライン</div>
+      </div>
+      <div class="filters">
+        <div class="filter-chip sel" data-filter="all">すべて</div>
+        <div class="filter-chip" data-filter="company">企業紐付き</div>
+        <div class="filter-chip" data-filter="event">イベント</div>
+        <div class="filter-chip" data-filter="personal">個人</div>
+      </div>
+    </div>
+
+    <section class="content-grid">
+      <div class="card schedule-card">
+        <div class="section-head">
+          <div>
+            <div class="section-title">予定一覧</div>
+            <div class="section-sub" id="viewSub">自己分析と選考進行を混ぜて時系列表示</div>
+          </div>
+        </div>
+
+        <div id="listView"></div>
+        <div id="timelineView"></div>
+      </div>
+
+      <div>
+        <div class="card side-card" style="margin-bottom:18px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title">次の一歩メモ</div>
+              <div class="section-sub">今の保存状況から、置くと良さそうな予定候補</div>
+            </div>
+          </div>
+          <div class="mini-list" id="nextTaskList"></div>
+        </div>
+
+        <div class="card side-card" style="margin-bottom:18px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title">企業比較とのつながり</div>
+              <div class="section-sub">自己分析データがあるほど、予定理由も具体化しやすい</div>
+            </div>
+          </div>
+          <div id="fitList"></div>
+        </div>
+
+        <div class="card side-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">空欄チェック</div>
+              <div class="section-sub">未保存の項目があるなら先にここを埋めると強い</div>
+            </div>
+          </div>
+          <div class="empty-box" id="emptyStateBox">未保存の項目を確認中…</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const TODAY = '2026-07-22';
+  const DEFAULT_TASKS = [
+    { id:'base-1', title:'自己分析（価値観型・簡易）をやってみる', type:'personal', date:'2026-07-21', time:'', done:true, memo:'自己分析の入口づくり。', reason:'入口づくり', analysisLink:'type', source:'template' },
+    { id:'base-2', title:'業界研究：メーカー3社を比較してみる', type:'personal', date:'2026-07-22', time:'', done:false, memo:'比較視点を増やす。', reason:'企業研究', analysisLink:'action', source:'template' },
+    { id:'base-3', title:'〇〇商事 ES提出', type:'company', company:'〇〇商事', date:'2026-07-23', time:'', done:false, memo:'締切対応。', reason:'選考進行', analysisLink:'action', source:'template' },
+    { id:'base-4', title:'△△製作所 一次面接', type:'company', company:'△△製作所', date:'2026-07-25', time:'14:00', done:false, memo:'面接準備も逆算したい。', reason:'選考進行', analysisLink:'action', source:'template' },
+    { id:'base-5', title:'合同企業説明会（マイナビEXPO）に参加', type:'event', date:'2026-07-27', time:'10:00', done:false, memo:'比較候補を広げる。', reason:'接点づくり', analysisLink:'action', source:'template' },
+    { id:'base-6', title:'◇◇ホールディングス エントリー締切', type:'company', company:'◇◇ホールディングス', date:'2026-07-30', time:'', done:false, memo:'エントリー対応。', reason:'締切管理', analysisLink:'action', source:'template' }
+  ];
+
+  const typeResult = readJson('shiori_type_result');
+  const valueDraft = readJson('shiori_katikan_draft');
+  const visionDraft = readJson('shiori_vision_draft');
+  const companyDraft = readJson('shiori_company_values_draft');
+  const motivationState = readJson('shiori_motivation_state') || {};
+  const taskStateKey = 'shiori_tasks';
+  const savedTasks = Array.isArray(readJson(taskStateKey)) ? readJson(taskStateKey) : [];
+
+  const companies = [
+    {name:'〇〇商事', step:'ES提出', next:'ES締切 7/23', traits:['挑戦','成長機会','裁量がある','再エネ事業'], risks:['評価基準が曖昧']},
+    {name:'△△製作所', step:'一次面接', next:'一次面接 7/25 14:00', traits:['堅実','チームワーク','教育体制','安定'], risks:['意思決定が遅い']},
+    {name:'□□システムズ', step:'気になる', next:'—', traits:['若手裁量','スピード感','ベンチャー気質'], risks:['長時間労働の可能性']},
+    {name:'◇◇ホールディングス', step:'エントリー', next:'エントリー締切 7/30', traits:['制度充実','大手基盤','配属幅が広い'], risks:['年功序列の色が強い']}
+  ];
+
+  function readJson(key){
+    try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
+  }
+  function saveJson(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+  function parseDate(dateStr){ return new Date(dateStr + 'T00:00:00'); }
+  function formatDayLabel(dateStr){
+    const d = parseDate(dateStr);
+    const days = ['日','月','火','水','木','金','土'];
+    return `${d.getMonth()+1}/${d.getDate()}（${days[d.getDay()]}）`;
+  }
+  function diffDays(dateStr){
+    const ms = parseDate(dateStr) - parseDate(TODAY);
+    return Math.round(ms / 86400000);
+  }
+  function badgeLabel(type, company){
+    if(type === 'company') return company || '企業紐付き';
+    if(type === 'event') return 'イベント';
+    return '個人';
+  }
+
+  const status = {
+    type: !!typeResult,
+    value: !!(valueDraft && valueDraft.summary),
+    vision: !!(visionDraft && visionDraft.summary),
+    company: !!(companyDraft && companyDraft.summary)
+  };
+  const doneModules = Object.values(status).filter(Boolean).length;
+
+  function dominantTypeLabel(){
+    if(!typeResult) return '未保存';
+    return (typeResult.result === 'vision' || typeResult.dominant === 'B') ? 'ビジョン型寄り' : '価値観型寄り';
+  }
+  function primaryValue(){ return valueDraft?.primaryValue || '未設定'; }
+  function getAssignments(bucket){
+    const entries = Object.entries(companyDraft?.assignments || {});
+    return entries.filter(([,v]) => v === bucket).map(([k]) => k === '__avoid__' ? '避けたい条件' : k);
+  }
+  const musts = getAssignments('Must');
+  const deals = getAssignments('Deal Breaker');
+  const wants = getAssignments('Want');
+  const avoids = getAssignments('Avoid');
+
+  function nextAction(){
+    let next = {
+      title:'タイプ診断',
+      href:'jikobunseki_type.html',
+      note:'まずはタイプ診断から。自己分析の入口をつくる予定を優先。',
+      scheduleTitle:'タイプ診断を完了する'
+    };
+    if(typeResult && !status.value && (typeResult.result === 'value' || typeResult.dominant === 'A')){
+      next = {
+        title:'価値観発掘', href:'jikobunseki_katikan.html',
+        note:'いまは価値観発掘から入る流れが自然。自分が大切にしたいことを言語化する予定が最優先。',
+        scheduleTitle:'価値観発掘の価値観カードを選び切る'
+      };
+    }
+    if(typeResult && !status.vision && (typeResult.result === 'vision' || typeResult.dominant === 'B')){
+      next = {
+        title:'ビジョン発掘', href:'jikobunseki_vision.html',
+        note:'未来像を先に描く流れの方が、いまは行動の意味づけを作りやすい。',
+        scheduleTitle:'1年後・3年後・5年後のビジョンを下書きする'
+      };
+    }
+    if(status.value && !status.vision){
+      next = {
+        title:'ビジョン発掘', href:'jikobunseki_vision.html',
+        note:'価値観が見えてきた今、未来像につなげる予定を先に置くと流れがきれい。',
+        scheduleTitle:'価値観メモをもとにビジョンを下書きする'
+      };
+    }
+    if(status.value && status.vision && !status.company){
+      next = {
+        title:'企業選びの価値観発掘', href:'jikobunseki_company_values.html',
+        note:'次は企業比較に使う軸づくり。Must / Want / Avoid / Deal Breaker の整理タスクが効くタイミング。',
+        scheduleTitle:'仕事選びのMust / Want / Avoid を整理する'
+      };
+    }
+    if(status.company){
+      const must = musts[0] || companyDraft?.primaryValue || primaryValue();
+      next = {
+        title:'企業比較・志望動機づくり', href:'companies_list.html',
+        note:`自己分析の主要モジュールはかなり揃った状態。今は「${must}」が本当に満たされるかを企業研究タスクに変える段階。`,
+        scheduleTitle:`${must} があるか企業研究で確認する`
+      };
+    }
+    return next;
+  }
+  const next = nextAction();
+
+  function autoSuggestedTasks(){
+    const items = [];
+    if(!status.type) items.push({ title:'タイプ診断を完了する', type:'personal', date:TODAY, memo:'自己分析の入口をつくる。', reason:'入口づくり', analysisLink:'type' });
+    if(typeResult && !status.value && (typeResult.result === 'value' || typeResult.dominant === 'A')) items.push({ title:'価値観発掘の価値観カードを選び切る', type:'personal', date:'2026-07-23', memo:'自分が大切にしたいことを言葉にする。', reason:'価値観整理', analysisLink:'value' });
+    if(((typeResult && !status.vision && (typeResult.result === 'vision' || typeResult.dominant === 'B')) || (status.value && !status.vision))) items.push({ title:'1年後・3年後・5年後のビジョンを下書きする', type:'personal', date:'2026-07-23', memo:'将来像を今の行動と結びつける。', reason:'未来像づくり', analysisLink:'vision' });
+    if(status.value && status.vision && !status.company) items.push({ title:'働く上でのMust / Want / Avoid を整理する', type:'personal', date:'2026-07-24', memo:'企業比較に使える軸をつくる。', reason:'企業比較の準備', analysisLink:'company' });
+    if(status.company){
+      const must = musts[0] || companyDraft?.primaryValue || primaryValue();
+      items.push({ title:`${must} があるか企業研究で確認する`, type:'company', company:'〇〇商事', date:'2026-07-22', memo:`自己分析で見えた「${must}」を説明会・OB訪問・口コミで確認したい。`, reason:'自己分析→企業研究', analysisLink:'action' });
+      items.push({ title:'相性の良い企業3社を並べて比較する', type:'personal', date:'2026-07-24', memo:'Must と Deal Breaker を見ながら深掘り優先順位を決める。', reason:'比較の言語化', analysisLink:'action' });
+      items.push({ title:'志望動機たたき台を1社分つくる', type:'company', company:'〇〇商事', date:'2026-07-26', memo:'価値観・ビジョン・企業軸をつなぐ。', reason:'志望動機準備', analysisLink:'action' });
+    }
+    return items;
+  }
+
+  function normalizeTask(task, idx){
+    return {
+      id: task.id || `task-${idx}`,
+      title: task.title || '無題の予定',
+      type: task.type || 'personal',
+      company: task.company || '',
+      date: task.date || TODAY,
+      time: task.time || '',
+      done: !!task.done,
+      memo: task.memo || '',
+      reason: task.reason || '',
+      analysisLink: task.analysisLink || 'action',
+      source: task.source || 'user'
+    };
+  }
+
+  const mergedTasks = [...DEFAULT_TASKS, ...savedTasks.map((t, i) => normalizeTask(t, i + 100))]
+    .sort((a,b) => (a.date + (a.time || '99:99')).localeCompare(b.date + (b.time || '99:99')));
+
+  function paintSummary(){
+    document.getElementById('summaryProgress').textContent = `${doneModules} / 4 完了`;
+    document.getElementById('summaryProgressSub').textContent = next.note;
+    document.getElementById('summaryPrimary').textContent = primaryValue();
+    document.getElementById('summaryPrimarySub').textContent = valueDraft?.summary || '行動の納得感につながる軸';
+    document.getElementById('summaryNext').textContent = next.title;
+    document.getElementById('summaryNextSub').textContent = next.scheduleTitle;
+    document.getElementById('summaryMust').textContent = musts.length ? musts.slice(0,2).join('・') : '未設定';
+    document.getElementById('summaryMustSub').textContent = deals.length ? `Deal Breaker: ${deals.slice(0,2).join('・')}` : '企業比較フェーズで効くやつ';
+
+    const visibleTotal = mergedTasks.length;
+    const doneCount = mergedTasks.filter(t => t.done).length;
+    const urgentCount = mergedTasks.filter(t => !t.done && diffDays(t.date) >= 0 && diffDays(t.date) <= 3).length;
+    document.getElementById('metricTaskTotal').textContent = visibleTotal;
+    document.getElementById('metricUrgent').textContent = urgentCount;
+    document.getElementById('metricDone').textContent = doneCount;
+
+    let heroChip = '行動化フェーズ';
+    let coachTitle = '今の段階に合う予定の置き方でいこ';
+    let coachCopy = next.note;
+    const tags = [];
+    if(status.type) tags.push(dominantTypeLabel());
+    if(status.value) tags.push(`価値観:${primaryValue()}`);
+    if(status.vision) tags.push('ビジョン保存あり');
+    if(status.company && companyDraft?.primaryValue) tags.push(`仕事軸:${companyDraft.primaryValue}`);
+    if(!tags.length) tags.push('未着手OK');
+
+    if(status.company){
+      heroChip = '企業比較へ反映中';
+      coachTitle = '分析を「企業研究タスク」に変える段階だよ';
+      coachCopy = `最重要価値観は「${primaryValue()}」、仕事選びの軸は「${companyDraft.primaryValue || '未設定'}」。今は Must / Deal Breaker を確認する予定を先に置くと、企業比較の精度がかなり上がる。`;
+      document.getElementById('nextPageCta').href = 'company_detail.html';
+      document.getElementById('nextPageCta').textContent = '企業詳細へ →';
+    } else if(status.value && status.vision){
+      heroChip = '比較軸づくり直前';
+      coachTitle = '次は仕事選びの軸を予定に落とし込む番';
+      coachCopy = '価値観とビジョンは見えてきてるから、次は企業選びの価値観発掘や比較メモづくりの予定を入れると流れが強い。';
+      document.getElementById('nextPageCta').href = 'jikobunseki_company_values.html';
+      document.getElementById('nextPageCta').textContent = '企業選びの価値観発掘へ →';
+    } else if(status.value){
+      heroChip = '未来像づくりフェーズ';
+      coachTitle = '価値観が見えた今、次は未来につなげよ';
+      coachCopy = `最重要価値観「${primaryValue()}」が見えてる今は、ビジョン発掘の予定を近めに置くとモチベも優先順位も整いやすい。`;
+      document.getElementById('nextPageCta').href = 'jikobunseki_vision.html';
+      document.getElementById('nextPageCta').textContent = 'ビジョン発掘へ →';
+    } else if(status.type){
+      heroChip = '入口から深掘りへ';
+      coachTitle = '診断結果に合わせて次の予定を絞ろ〜';
+      coachCopy = `診断結果は ${dominantTypeLabel()}。今はその傾向に合う順番で自己分析タスクを先に入れると、迷いが減って進めやすい。`;
+    }
+
+    document.getElementById('heroChip').textContent = heroChip;
+    document.getElementById('heroNote').textContent = next.note;
+    document.getElementById('coachTitle').textContent = coachTitle;
+    document.getElementById('coachCopy').textContent = coachCopy;
+    document.getElementById('coachCta').href = 'add_task.html';
+    document.getElementById('coachCta').textContent = `「${next.scheduleTitle}」を予定に入れる →`;
+    const wrap = document.getElementById('coachTags');
+    wrap.innerHTML = '';
+    tags.forEach(tag => {
+      const span = document.createElement('span');
+      span.className = 'coach-tag';
+      span.textContent = tag;
+      wrap.appendChild(span);
+    });
+
+    const missing = [];
+    if(!status.type) missing.push('タイプ診断');
+    if(!status.value) missing.push('価値観発掘');
+    if(!status.vision) missing.push('ビジョン発掘');
+    if(!status.company) missing.push('企業選びの価値観発掘');
+    document.getElementById('emptyStateBox').textContent = missing.length
+      ? `未保存の項目：${missing.join(' / ')}。今は「${next.title}」を優先すると、予定の意味づけがどんどん強くなる。`
+      : '自己分析の主要モジュールは保存済み。ここからは企業比較・志望動機・締切管理に集中してOK。';
+  }
+
+  function renderUrgent(){
+    const wrap = document.getElementById('urgentList');
+    wrap.innerHTML = '';
+    const urgent = mergedTasks
+      .filter(t => !t.done && diffDays(t.date) >= 0)
+      .sort((a,b) => diffDays(a.date) - diffDays(b.date))
+      .slice(0, 3);
+
+    if(!urgent.length){
+      wrap.innerHTML = '<div class="empty-box" style="grid-column:1 / -1;">直近の予定はまだありません。add_task.html から次の一歩を追加できるよ。</div>';
+      return;
+    }
+
+    urgent.forEach(task => {
+      const div = document.createElement('div');
+      div.className = 'urgent-item';
+      const days = diffDays(task.date);
+      const when = days === 0 ? '今日' : days === 1 ? '明日' : `あと${days}日`;
+      div.innerHTML = `
+        <div class="urgent-top">
+          <div class="urgent-date mono">${formatDayLabel(task.date)} ${task.time || ''}</div>
+          <span class="urgent-pill ${task.type}">${badgeLabel(task.type, task.company)}</span>
+        </div>
+        <div class="urgent-title">${task.title}</div>
+        <div class="urgent-meta">${when} ・ ${task.reason || task.memo || '予定メモなし'}</div>
+      `;
+      wrap.appendChild(div);
+    });
+  }
+
+  function groupTasks(tasks){
+    const map = {};
+    tasks.forEach(task => {
+      if(!map[task.date]) map[task.date] = [];
+      map[task.date].push(task);
+    });
+    return Object.entries(map).sort(([a],[b]) => a.localeCompare(b));
+  }
+
+  function renderList(filter='all'){
+    const root = document.getElementById('listView');
+    root.innerHTML = '';
+    const tasks = mergedTasks.filter(t => filter === 'all' ? true : t.type === filter);
+    if(!tasks.length){
+      root.innerHTML = '<div class="empty-box">この条件の予定はまだありません。おすすめタスクから追加してみてね。</div>';
+      return;
+    }
+
+    groupTasks(tasks).forEach(([date, items]) => {
+      const group = document.createElement('div');
+      group.className = 'day-group';
+      const todayTag = date === TODAY ? '<span class="today-tag">今日</span>' : '';
+      group.innerHTML = `<div class="day-label">${formatDayLabel(date)}${todayTag}</div><div class="day-card"></div>`;
+      const card = group.querySelector('.day-card');
+
+      items.forEach(task => {
+        const row = document.createElement('div');
+        row.className = `task ${task.done ? 'done' : ''}`;
+        const check = document.createElement('div');
+        check.className = `check ${task.done ? 'done' : ''}`;
+        if(task.done) check.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+        check.addEventListener('click', (e) => {
+          e.stopPropagation();
+          task.done = !task.done;
+          syncTaskDone(task.id, task.done);
+          if(task.done) incrementMotivationCount();
+          renderAll(currentFilter, currentView);
+        });
+        const companyLabel = task.type === 'company' ? task.company : badgeLabel(task.type, task.company);
+        row.appendChild(check);
+        const body = document.createElement('div');
+        body.className = 'task-body';
+        body.innerHTML = `
+          <div class="task-top">
+            <div class="task-title">${task.title}</div>
+            <div class="task-time mono">${task.time || (task.type === 'company' && task.title.includes('締切') ? '締切' : '')}</div>
+          </div>
+          <div class="task-meta"><span class="badge ${task.type}">${companyLabel}</span>${task.analysisLink ? `<span>自己分析リンク：${analysisLabel(task.analysisLink)}</span>` : ''}</div>
+          ${task.memo ? `<div class="task-note">${task.memo}</div>` : ''}
+          ${task.reason ? `<div class="task-reason">${task.reason}</div>` : ''}
+        `;
+        row.appendChild(body);
+        card.appendChild(row);
+      });
+      root.appendChild(group);
+    });
+  }
+
+  function analysisLabel(key){
+    if(key === 'type') return 'タイプ診断';
+    if(key === 'value') return '価値観発掘';
+    if(key === 'vision') return 'ビジョン発掘';
+    if(key === 'company') return '企業選びの価値観発掘';
+    return '行動化・企業研究';
+  }
+
+  function renderTimeline(filter='all'){
+    const root = document.getElementById('timelineView');
+    const tasks = mergedTasks.filter(t => filter === 'all' ? true : t.type === filter);
+    if(!tasks.length){
+      root.innerHTML = '<div class="empty-box">この条件の予定はまだありません。おすすめタスクから追加してみてね。</div>';
+      return;
+    }
+    root.innerHTML = '<div class="timeline"></div>';
+    const wrap = root.firstElementChild;
+    tasks.forEach(task => {
+      const row = document.createElement('div');
+      row.className = `tl-item ${task.done ? 'done' : ''} ${task.date === TODAY ? 'today' : ''}`;
+      row.innerHTML = `
+        <div class="tl-when">${formatDayLabel(task.date)}${task.time ? ' ' + task.time : ''}</div>
+        <div class="tl-card">
+          <div class="tl-title">${task.title}</div>
+          <div class="task-meta"><span class="badge ${task.type}">${badgeLabel(task.type, task.company)}</span>${task.analysisLink ? `<span>自己分析リンク：${analysisLabel(task.analysisLink)}</span>` : ''}</div>
+          ${task.memo ? `<div class="tl-sub">${task.memo}</div>` : ''}
+        </div>
+      `;
+      wrap.appendChild(row);
+    });
+  }
+
+  function syncTaskDone(taskId, done){
+    const saved = Array.isArray(readJson(taskStateKey)) ? readJson(taskStateKey) : [];
+    const idx = saved.findIndex(t => t.id === taskId);
+    if(idx >= 0){
+      saved[idx].done = done;
+      saveJson(taskStateKey, saved);
+    }
+  }
+
+  function incrementMotivationCount(){
+    const state = readJson('shiori_motivation_state') || { taskCount:27, streakDays:3, rewards:[], history:[] };
+    state.taskCount = Number(state.taskCount || 0) + 1;
+    saveJson('shiori_motivation_state', state);
+  }
+
+  function renderNextTasks(){
+    const wrap = document.getElementById('nextTaskList');
+    wrap.innerHTML = '';
+    autoSuggestedTasks().slice(0,4).forEach(task => {
+      const row = document.createElement('div');
+      row.className = 'mini-row';
+      row.innerHTML = `<strong>${task.title}</strong><span>${task.memo}</span>`;
+      wrap.appendChild(row);
+    });
+    if(!wrap.children.length){
+      wrap.innerHTML = '<div class="empty-box">追加候補の予定はまだありません。まずは自己分析の保存を進めるとここが育つよ。</div>';
+    }
+  }
+
+  function evaluate(company){
+    if(!companyDraft?.summary){ return {level:'none', label:'未判定', reason:'自己分析データがまだ不足'}; }
+    let score = 0;
+    const reasons = [];
+    const workPrimary = companyDraft.primaryValue;
+    if(workPrimary && company.traits.some(t => t.includes(workPrimary) || workPrimary.includes(t))){ score += 3; reasons.push(`最重要の「${workPrimary}」に近い`); }
+    musts.forEach(m => { if(company.traits.some(t => t.includes(m) || m.includes(t))){ score += 2; reasons.push(`Mustの「${m}」に近い`); } });
+    wants.forEach(w => { if(company.traits.some(t => t.includes(w) || w.includes(t))){ score += 1; reasons.push(`Wantの「${w}」に近い`); } });
+    avoids.forEach(a => { if(company.risks.some(r => r.includes(a) || a.includes(r))){ score -= 2; reasons.push(`Avoidの「${a}」に注意`); } });
+    deals.forEach(d => { if(company.risks.some(r => r.includes(d) || d.includes(r))){ score -= 4; reasons.push(`Deal Breakerの「${d}」に近い可能性`); } });
+    if(score >= 3) return {level:'good', label:'合いそう', reason:reasons[0] || '深掘り候補'};
+    if(score <= -1) return {level:'bad', label:'ミスマッチ注意', reason:reasons[0] || '懸念あり'};
+    return {level:'mid', label:'要確認', reason:reasons[0] || '追加確認がおすすめ'};
+  }
+
+  function renderFitList(){
+    const wrap = document.getElementById('fitList');
+    wrap.innerHTML = '';
+    companies.forEach(company => {
+      const fit = evaluate(company);
+      const row = document.createElement('div');
+      row.className = 'fit-row';
+      row.innerHTML = `
+        <div class="fit-top"><div class="fit-name">${company.name}</div><span class="fit-pill ${fit.level}">${fit.label}</span></div>
+        <div class="fit-reason">${fit.reason}</div>
+      `;
+      wrap.appendChild(row);
+    });
+  }
+
+  let currentFilter = 'all';
+  let currentView = 'list';
+  function renderAll(filter='all', view='list'){
+    currentFilter = filter;
+    currentView = view;
+    paintSummary();
+    renderUrgent();
+    renderNextTasks();
+    renderFitList();
+    renderList(filter);
+    renderTimeline(filter);
+    document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
+    document.getElementById('timelineView').style.display = view === 'timeline' ? 'block' : 'none';
+    document.getElementById('viewSub').textContent = view === 'list' ? '自己分析と選考進行を混ぜて時系列表示' : '流れで見たい時用のタイムライン表示';
+  }
+
+  document.getElementById('btnList').addEventListener('click', ()=>{
+    document.getElementById('btnList').classList.add('sel');
+    document.getElementById('btnTimeline').classList.remove('sel');
+    renderAll(currentFilter, 'list');
+  });
+  document.getElementById('btnTimeline').addEventListener('click', ()=>{
+    document.getElementById('btnTimeline').classList.add('sel');
+    document.getElementById('btnList').classList.remove('sel');
+    renderAll(currentFilter, 'timeline');
+  });
+  document.querySelectorAll('.filter-chip').forEach(btn => btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('sel'));
+    btn.classList.add('sel');
+    renderAll(btn.dataset.filter, currentView);
+  }));
+
+  renderAll();
+</script>
+</body>
+</html>

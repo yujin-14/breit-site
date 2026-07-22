@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breit - 企業選びの価値観発掘 (/jikobunseki/company-values)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F8F5; --ink:#1A2238; --ink-soft:#4A5170;
+    --teal:#2F7D6B; --teal-deep:#245F52; --coral:#E8674F; --amber:#D9A441;
+    --line:#DEDCD0; --card:#FFFFFF; --bg-soft:#EEF3F1;
+    --shadow:0 1px 2px rgba(26,34,56,.04),0 6px 16px rgba(26,34,56,.06);
+    --danger:#B65042;
+  }
+  *{box-sizing:border-box;min-width:0;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Zen Kaku Gothic New',sans-serif;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .serif{font-family:'Shippori Mincho B1',serif;}
+  .app{display:grid;grid-template-columns:76px 1fr;min-height:100vh;}
+
+  .nav{
+    background:var(--ink);padding:24px 0;display:flex;flex-direction:column;
+    align-items:center;gap:6px;
+  }
+  .nav-logo{
+    width:36px;height:36px;border-radius:8px;background:var(--teal);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:16px;
+    margin-bottom:28px;flex-shrink:0;
+  }
+  .nav-items{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center;}
+  .nav-item{
+    width:52px;padding:10px 0 8px;border-radius:10px 10px 0 0;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    color:#8891AC;cursor:pointer;position:relative;flex-shrink:0;
+  }
+  .nav-item svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;}
+  .nav-item span{font-size:9.5px;white-space:nowrap;}
+  .nav-item.active{color:#fff;background:var(--teal);}
+  .nav-item.active::after{
+    content:"";position:absolute;right:-6px;top:0;bottom:0;width:6px;
+    background:var(--teal);clip-path:polygon(0 0,100% 50%,0 100%);
+  }
+  .nav-item.disabled{color:#4A5170;cursor:default;}
+  .nav-tag{
+    margin-top:auto;writing-mode:vertical-rl;color:#5A6382;font-size:9px;
+    letter-spacing:.15em;padding-top:20px;flex-shrink:0;
+  }
+
+  main{
+    padding:clamp(20px,4vw,40px) clamp(16px,5vw,56px) 100px;
+    max-width:1100px;width:100%;
+  }
+  .back-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px;}
+  .back-link{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;
+    color:var(--ink-soft);text-decoration:none;
+  }
+  .back-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+  .eyebrow{
+    font-size:12px;color:var(--teal-deep);letter-spacing:.14em;
+    font-weight:700;margin-bottom:8px;
+  }
+  h1{
+    font-family:'Shippori Mincho B1',serif;font-weight:700;
+    font-size:clamp(22px,3vw,28px);margin:0 0 10px;
+  }
+  .lead{
+    color:var(--ink-soft);font-size:13.5px;line-height:1.8;
+    max-width:68ch;margin:0 0 18px;
+  }
+
+  .flow-banner,.lock-banner{
+    display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;box-shadow:var(--shadow);margin-bottom:24px;
+  }
+  .flow-chip,.lock-chip{
+    font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;
+    white-space:nowrap;
+  }
+  .flow-chip{background:#EAF2F0;color:var(--teal-deep);}
+  .lock-chip{background:#F7E9E6;color:var(--danger);}
+  .flow-text,.lock-text{font-size:12.5px;color:var(--ink-soft);line-height:1.8;}
+  .flow-text b,.lock-text b{color:var(--ink);}
+  .lock-banner{display:none;}
+
+  .progress-wrap{
+    position:sticky;top:0;background:linear-gradient(var(--paper),var(--paper) 84%,rgba(247,248,245,0));
+    padding:10px 0 16px;z-index:5;margin-bottom:8px;
+  }
+  .progress-track{height:7px;background:#E3E0D2;border-radius:999px;overflow:hidden;}
+  .progress-fill{height:100%;width:0%;background:var(--teal);border-radius:999px;transition:width .28s;}
+  .progress-label{font-size:11.5px;color:var(--ink-soft);margin-top:6px;font-family:'JetBrains Mono',monospace;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:clamp(18px,3vw,28px);box-shadow:var(--shadow);margin-bottom:18px;
+  }
+  .card-head{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+  .step-num{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);
+    border:1px solid var(--teal);border-radius:5px;padding:2px 7px;
+  }
+  .card-title{font-family:'Shippori Mincho B1',serif;font-size:18px;font-weight:700;margin-top:8px;}
+  .card-sub{font-size:12.5px;color:var(--ink-soft);line-height:1.7;margin-top:6px;}
+  .helper{margin-top:9px;font-size:12px;color:var(--ink-soft);line-height:1.7;}
+
+  textarea,input[type="text"],select{
+    width:100%;border:1.6px solid var(--line);border-radius:12px;padding:14px 15px;
+    background:var(--paper);font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:14px;color:var(--ink);line-height:1.7;
+  }
+  textarea:focus,input[type="text"]:focus,select:focus{outline:none;border-color:var(--teal);}
+  textarea{min-height:128px;resize:vertical;}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .search{flex:1;min-width:220px;position:relative;}
+  .search input{min-height:46px;padding-left:42px;}
+  .search-icon{
+    position:absolute;left:14px;top:50%;transform:translateY(-50%);
+    width:16px;height:16px;stroke:var(--ink-soft);fill:none;stroke-width:2;
+  }
+  .count-note{font-size:12px;color:var(--ink-soft);white-space:nowrap;}
+
+  .value-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:10px;margin-bottom:14px;}
+  .value-card{
+    border:1.4px solid var(--line);background:var(--paper);border-radius:12px;
+    padding:12px 10px;text-align:center;font-size:13px;font-weight:700;
+    color:var(--ink-soft);cursor:pointer;transition:.18s;
+  }
+  .value-card:hover{border-color:#C9C6B7;transform:translateY(-1px);}
+  .value-card.sel{background:#EAF2F0;border-color:var(--teal);color:var(--teal-deep);}
+  .value-card.primary{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 6px 16px rgba(47,125,107,.16);}
+
+  .picked-wrap{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+  .picked-pill{
+    display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;
+    background:var(--card);border:1px solid var(--line);font-size:12.5px;
+    color:var(--ink);font-weight:700;
+  }
+  .picked-pill.primary{border-color:var(--teal);background:#EAF2F0;color:var(--teal-deep);}
+  .pill-btn{border:none;background:transparent;color:inherit;cursor:pointer;font-size:11px;padding:0;}
+
+  .reason-list{display:flex;flex-direction:column;gap:14px;}
+  .reason-item{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--paper);}
+  .reason-head{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .reason-name{font-family:'Shippori Mincho B1',serif;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .primary-badge,.normal-badge{font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:999px;}
+  .primary-badge{background:var(--teal);color:#fff;}
+  .normal-badge{background:#F1EEE3;color:#8A7A3E;}
+
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:860px){ .compare-grid{grid-template-columns:1fr;} }
+  .compare-box{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--paper);}
+  .compare-title{font-family:'Shippori Mincho B1',serif;font-size:16px;font-weight:700;margin-bottom:10px;}
+  .tag-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag{
+    display:inline-flex;align-items:center;gap:6px;padding:8px 11px;border-radius:999px;
+    background:#fff;border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--ink-soft);
+  }
+  .tag.common{background:#EAF2F0;border-color:var(--teal);color:var(--teal-deep);}
+  .tag.diff{background:#F6F2E8;border-color:#DCCB91;color:#7E6B2E;}
+  .tag.avoid{background:#F7E9E6;border-color:#D99C95;color:var(--danger);}
+  .compare-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  @media (max-width:640px){ .compare-summary{grid-template-columns:1fr;} }
+  .summary-mini{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .mini-label{font-size:11px;color:var(--ink-soft);font-weight:700;letter-spacing:.06em;margin-bottom:8px;}
+  .mini-body{font-size:13px;line-height:1.8;color:var(--ink);white-space:pre-wrap;word-break:break-word;}
+  .mini-body.soft{color:var(--ink-soft);}
+
+  .classify-note{margin-bottom:14px;}
+  .bucket-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:760px){ .bucket-grid{grid-template-columns:1fr;} }
+  .bucket{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--paper);}
+  .bucket-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+  .bucket-title{font-family:'Shippori Mincho B1',serif;font-size:15px;font-weight:700;}
+  .bucket-sub{font-size:11.5px;color:var(--ink-soft);line-height:1.6;}
+  .assign-list{display:flex;flex-direction:column;gap:10px;}
+  .assign-row{
+    display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:10px;align-items:center;
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;
+  }
+  @media (max-width:560px){ .assign-row{grid-template-columns:1fr;} }
+  .assign-name{font-size:13px;font-weight:700;color:var(--ink);}
+
+  .result-panel{
+    display:none;background:linear-gradient(180deg,#FFFFFF 0%,#FAFBF8 100%);
+    border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow);
+    margin-top:8px;
+  }
+  .result-title{font-family:'Shippori Mincho B1',serif;font-size:20px;font-weight:700;margin:0 0 8px;}
+  .result-lead{color:var(--ink-soft);font-size:13.5px;line-height:1.8;margin-bottom:18px;}
+  .summary-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;margin-bottom:18px;}
+  .summary-box p{margin:0;font-size:14px;line-height:1.9;}
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:760px){ .result-grid{grid-template-columns:1fr;} }
+  .result-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;}
+
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end;margin-top:24px;}
+  .btn{
+    border:none;border-radius:12px;padding:13px 18px;font-size:13.5px;
+    font-weight:700;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;
+  }
+  .btn-ghost{background:#fff;border:1.6px solid var(--line);color:var(--ink-soft);}
+  .btn-primary{background:var(--teal);color:#fff;}
+  .btn-primary.disabled{background:#AAB7B3;cursor:not-allowed;}
+
+  @media (max-width:640px){
+    .app{grid-template-columns:1fr;}
+    .nav{
+      position:sticky;top:0;z-index:20;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+      flex-direction:row;justify-content:space-between;align-items:center;
+    }
+    .nav-logo{margin:0;width:32px;height:32px;font-size:14px;}
+    .nav-items{flex-direction:row;gap:8px;justify-content:flex-end;overflow:auto;}
+    .nav-item{width:auto;min-width:58px;padding:8px 10px;border-radius:10px;}
+    .nav-item.active::after{display:none;}
+    .nav-tag{display:none;}
+    main{padding-top:20px;}
+  }
+
+/* BREIT BRAND */
+.nav-logo{background:transparent !important;border-radius:0 !important;width:44px !important;height:44px !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;}
+.nav-logo img{width:100%;height:100%;object-fit:contain;display:block;}
+.brand-inline{display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.brand-inline img{display:block;height:auto;}
+
+
+/* BREIT BRAND SYSTEM */
+.nav-logo{background:transparent !important;border-radius:0 !important;width:44px !important;height:44px !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:visible !important;}
+.nav-logo .breit-svg{width:100% !important;height:100% !important;display:block;}
+.breit-lockup{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.breit-lockup--mono .breit-svg{width:58px;height:58px;flex:0 0 auto;}
+.breit-lockup__word{font-family:'Cormorant Garamond','Shippori Mincho B1',serif;font-size:clamp(32px,4vw,48px);font-weight:600;letter-spacing:.02em;color:#2A2620;line-height:1;}
+.breit-lockup__sub{font-size:12px;color:#6B675F;letter-spacing:.12em;line-height:1.7;}
+
+
+/* FINAL UI POLISH */
+:root{
+  --shadow-soft:0 1px 2px rgba(26,34,56,.04),0 12px 28px rgba(26,34,56,.08);
+  --surface-gap:clamp(18px,2.2vw,24px);
+}
+body{line-height:1.6;}
+.app{grid-template-columns:84px minmax(0,1fr) !important;}
+.nav{padding:26px 0 18px !important;gap:8px !important;}
+.nav-logo{width:48px !important;height:48px !important;margin-bottom:24px !important;}
+.nav-items{gap:8px !important;}
+.nav-item{width:56px !important;padding:11px 0 10px !important;border-radius:14px 14px 0 0 !important;transition:background-color .18s ease,color .18s ease,transform .18s ease;}
+.nav-item:hover{transform:translateY(-1px);}
+.nav-item svg{width:20px !important;height:20px !important;}
+.nav-item span{font-size:10px !important;letter-spacing:.03em !important;}
+.nav-tag{padding-top:22px !important;line-height:1.55;}
+main{padding:clamp(28px,4.6vw,52px) clamp(22px,5vw,60px) 96px !important;max-width:1240px !important;}
+.top-row{gap:20px !important;align-items:flex-end !important;margin-bottom:clamp(20px,3vw,28px) !important;}
+.greeting-eyebrow,.eyebrow,.coach-label,.cta-eyebrow,.label,.summary-label,.mini-label,.section-sub,.phase-chip,.chip{letter-spacing:.12em;}
+h1,h1.greeting,.greeting{line-height:1.34 !important;letter-spacing:.01em;}
+.lead,.hero-sub,.phase-text,.banner-text,.card-copy,.summary-sub,.mini-sub,.hero-note,.coach-copy,.cta-sub,.task-note,.fit-reason,.guide-text,.history-empty,.fw-sub,.sub,.banner-text,.check-text,.tl-sub,.insight-body,.hero-caption{line-height:1.9 !important;}
+.grid,.stack,.summary-grid,.hero-grid,.content-grid,.bottom-grid,.matrix,.insight-grid,.reward-grid,.urgent-list,.guide-list,.history-list,.mini-list,.fw-list,.feature-list{gap:var(--surface-gap) !important;}
+.card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.phase-banner,.banner,.goal-card,.cta,.hero-card,.reward-card,.summary-card,.urgent-card{border-radius:20px !important;box-shadow:var(--shadow-soft) !important;}
+.card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.urgent-card{padding:clamp(20px,3vw,28px) !important;}
+.hero-card,.cta,.goal-card{overflow:hidden;}
+.card-head,.section-head,.hero-head{margin-bottom:16px !important;}
+.card-title,.section-title,.hero-title,.coach-title,.cta-title{letter-spacing:.01em;}
+.task,.company-row,.fw-row,.guide-item,.check-item,.history-row,.fit-row,.mini-row,.urgent-item,.metric,.mini,.insight-box,.tl-card,.day-card,.story-pill,.band-card{border-radius:16px !important;}
+.task,.company-row{padding-left:8px !important;padding-right:8px !important;}
+.task-title,.urgent-title,.fit-name,.history-title,.company-name,.tl-title,.fw-name,.main-val,.summary-main,.mini-main{line-height:1.7 !important;}
+.add-btn,.ghost-btn,.link-btn,.cta-btn,.btn,.nav-cta{min-height:44px !important;padding:12px 18px !important;border-radius:12px !important;}
+.view-btn,.filter-chip,.note-chip,.cta-chip,.coach-tag,.hero-chip,.band-chip,.phase-chip,.chip,.step-pill,.fit-pill,.badge,.urgent-pill,.status{border-radius:999px !important;}
+a,button,[role="button"],.nav-item,.filter-chip,.view-btn,.check{transition:all .18s ease;}
+a:hover,button:hover,[role="button"]:hover{filter:saturate(1.02);}
+:focus-visible{outline:2px solid rgba(47,125,107,.45);outline-offset:2px;}
+table{border-radius:20px !important;overflow:hidden;}
+th,td{padding:14px 15px !important;line-height:1.8 !important;}
+@media (max-width:1080px){
+  main{padding-inline:20px !important;}
+}
+@media (max-width:767px){
+  .app{grid-template-columns:1fr !important;}
+  .nav{padding:10px 12px !important;gap:6px !important;}
+  .nav-logo{width:40px !important;height:40px !important;margin-bottom:0 !important;margin-right:10px !important;}
+  .nav-items{gap:6px !important;}
+  .nav-item{width:auto !important;padding:9px 11px !important;border-radius:12px !important;}
+  .nav-item:hover{transform:none;}
+  .nav-item span{font-size:11px !important;}
+  .nav-tag{display:none !important;}
+  main{padding:18px 14px 56px !important;}
+  .top-row{gap:14px !important;}
+  .grid,.summary-grid,.hero-grid,.content-grid,.bottom-grid,.matrix,.insight-grid,.reward-grid,.urgent-list,.hero-metrics,.mini-metrics{gap:12px !important;}
+  .card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.urgent-card{padding:18px !important;}
+  .task,.company-row,.history-row,.guide-item,.check-item,.fit-row,.urgent-item{padding:14px !important;}
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+  <aside class="nav">
+    <div class="nav-logo" aria-label="Breit"><svg class="breit-svg breit-svg-a3" width="140" height="140" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:594:20:2" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:140px;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:none;direction:ltr;display:block;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:140px;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:140px;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:auto;min-height:auto;min-inline-size:auto;min-width:auto;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:hidden;overflow-clip-margin:content-box;overflow-inline:hidden;overflow-wrap:normal;overflow-x:hidden;overflow-y:hidden;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:70px 70px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:none;stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:1px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:70px 70px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:140px;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"><path d="M 28 52 A 12 12 0 0 1 52 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:718:22:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 28 52 A 12 12 0 0 1 52 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><path d="M 20 52 A 20 20 0 0 1 60 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" opacity="0.75" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:849:24:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 20 52 A 20 20 0 0 1 60 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:0.75;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><path d="M 12 52 A 28 28 0 0 1 68 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" opacity="0.5" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:996:26:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 12 52 A 28 28 0 0 1 68 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:0.5;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><circle cx="40" cy="52" r="2.2" fill="#3d5c3a" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:1146:28:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:40px;cy:52px;d:none;direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:rgb(61, 92, 58);fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:2.2px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:none;stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:1px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/></svg></div>
+    <div class="nav-items">
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        <span>ホーム</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 9h16"/></svg>
+        <span>予定</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M6 19V8l6-4 6 4v11"/><path d="M9 11h6M9 14h6"/></svg>
+        <span>企業</span>
+      </div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.8-3.6 5-5 8-5s6.2 1.4 8 5"/></svg>
+        <span>自己分析</span>
+      </div>
+      <div class="nav-item disabled">
+        <svg viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>
+        <span>モチベ</span>
+      </div>
+    </div>
+    <div class="nav-tag mono">SHIORI</div>
+  </aside>
+
+  <main>
+    <div class="back-row">
+      <a class="back-link" href="jikobunseki_vision.html">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        ビジョン発掘に戻る
+      </a>
+      <a class="back-link" href="jikobunseki.html">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        自己分析ハブに戻る
+      </a>
+    </div>
+
+    <div class="eyebrow mono">SELF ANALYSIS / H2-4</div>
+    <h1>企業選びの価値観発掘</h1>
+    <p class="lead">
+      ここでは「人生で大切なこと」とは少し切り分けて、<b>働く上で何を重視したいか</b>を整理していくよ。<br>
+      似ているところも、ちょっとズレるところも、どっちも大事なヒントです。
+    </p>
+
+    <div class="flow-banner" id="flowBanner">
+      <span class="flow-chip">価値観発掘と比較しながら進行</span>
+      <div class="flow-text">
+        すでに保存されている <b>人生の価値観</b> と、これから選ぶ <b>働く上での価値観</b> を並べて見比べられる設計です。
+      </div>
+    </div>
+
+    <div class="lock-banner" id="lockBanner">
+      <span class="lock-chip">比較ステップはロック中</span>
+      <div class="lock-text">
+        このページの比較機能を使うには、先に <b>価値観発掘</b> の受診が必要だよ。<br>
+        下のリンクから先に進めてね → <a href="jikobunseki_katikan.html">価値観発掘へ</a>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 6 STEP COMPLETED</div>
+    </div>
+
+    <section class="card" data-step="1">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 1</div>
+          <div class="card-title">働く上で大切にしたい価値観を選ぶ</div>
+          <div class="card-sub">
+            「人生全体で大事」ではなく、<b>仕事・職場・働き方</b>の文脈でしっくりくるものを5つ前後選んでみてね。いちばん大事なものは濃い緑になります。
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search">
+          <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+          <input type="text" id="searchInput" placeholder="価値観ワードを検索">
+        </div>
+        <div class="count-note">選択中 <span class="mono" id="selectedCount">0</span> 件 / 最重要 <span class="mono" id="primaryValueLabel">未選択</span></div>
+      </div>
+
+      <div class="value-grid" id="valueGrid"></div>
+      <div class="picked-wrap" id="pickedWrap"></div>
+      <div class="helper">※ まず複数選択 → 最重要にしたいカードをもう一度押す仕様。5つ前後が目安だよ。</div>
+    </section>
+
+    <section class="card" data-step="2">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 2</div>
+          <div class="card-title">なぜ働く上でそれを大切にしたいか、言葉にする</div>
+          <div class="card-sub">
+            ここでの理由は「仕事選び・会社選び」での意味に寄せて書くのがポイントです。
+          </div>
+        </div>
+      </div>
+      <div class="reason-list" id="reasonList">
+        <div class="helper">まずは STEP 1 で価値観カードを選んでね。</div>
+      </div>
+    </section>
+
+    <section class="card" data-step="3">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 3</div>
+          <div class="card-title">人生の価値観と、働く上での価値観を比較する</div>
+          <div class="card-sub">
+            共通しているものは強い軸。ズレているものは、会社選びで何を優先したいかのヒントになります。
+          </div>
+        </div>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-box">
+          <div class="compare-title">人生で大切な価値観</div>
+          <div class="tag-list" id="lifeTags"></div>
+        </div>
+        <div class="compare-box">
+          <div class="compare-title">働く上で大切な価値観</div>
+          <div class="tag-list" id="workTags"></div>
+        </div>
+      </div>
+
+      <div class="compare-summary">
+        <div class="summary-mini">
+          <div class="mini-label">共通している価値観</div>
+          <div class="mini-body" id="commonValues">—</div>
+        </div>
+        <div class="summary-mini">
+          <div class="mini-label">違いがある価値観</div>
+          <div class="mini-body" id="diffValues">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-step="4">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 4</div>
+          <div class="card-title">違いがあるなら、その理由を考えてみる</div>
+          <div class="card-sub">
+            人生の価値観と仕事の価値観がズレるのは全然ふつう。そのズレに意味があるかも、って視点で書いてみてね。
+          </div>
+        </div>
+      </div>
+      <textarea id="differenceReason" placeholder="例）人生では『自由』が大事だけど、仕事ではまず『成長機会』を優先したい。社会人初期は自由さより、学べる環境を取りにいきたいから。"></textarea>
+    </section>
+
+    <section class="card" data-step="5">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 5</div>
+          <div class="card-title">働きたくない企業・避けたい条件を言葉にする</div>
+          <div class="card-sub">
+            「こういう会社は合わなそう」「こういう環境はしんどそう」を先に明確にしておくと、企業比較がめちゃしやすくなるよ。
+          </div>
+        </div>
+      </div>
+      <textarea id="avoidCompany" placeholder="例）極端に年功序列で若手の意見が通らない会社。過度な長時間労働が当たり前の文化。評価基準が曖昧な環境。"></textarea>
+    </section>
+
+    <section class="card" data-step="6">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 6</div>
+          <div class="card-title">Must / Want / Avoid / Deal Breaker に整理する</div>
+          <div class="card-sub">
+            SPでも使いやすいように、ドラッグではなくプルダウン方式にしてあります。価値観と避けたい条件を優先度で振り分けよう。
+          </div>
+        </div>
+      </div>
+
+      <div class="classify-note helper">
+        Must = 絶対に必要 / Want = あれば嬉しい / Avoid = できれば避けたい / Deal Breaker = 絶対に避けたい
+      </div>
+      <div class="assign-list" id="assignList"></div>
+
+      <div class="bucket-grid" style="margin-top:18px;">
+        <div class="bucket">
+          <div class="bucket-head"><div><div class="bucket-title">Must</div><div class="bucket-sub">絶対に必要</div></div></div>
+          <div class="mini-body" id="bucketMust">—</div>
+        </div>
+        <div class="bucket">
+          <div class="bucket-head"><div><div class="bucket-title">Want</div><div class="bucket-sub">あれば嬉しい</div></div></div>
+          <div class="mini-body" id="bucketWant">—</div>
+        </div>
+        <div class="bucket">
+          <div class="bucket-head"><div><div class="bucket-title">Avoid</div><div class="bucket-sub">できれば避けたい</div></div></div>
+          <div class="mini-body" id="bucketAvoid">—</div>
+        </div>
+        <div class="bucket">
+          <div class="bucket-head"><div><div class="bucket-title">Deal Breaker</div><div class="bucket-sub">絶対に避けたい</div></div></div>
+          <div class="mini-body" id="bucketDeal">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="result-panel" id="resultPanel">
+      <h2 class="result-title">企業選びの価値観発掘まとめ</h2>
+      <p class="result-lead">
+        働く上で重視したいことと、避けたい条件を整理できた状態です。企業比較・企業研究につなげやすい形で出力しています。
+      </p>
+
+      <div class="summary-box">
+        <p id="summaryText">ここに要約が表示されます。</p>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-box">
+          <div class="mini-label">共通する価値観</div>
+          <div class="mini-body" id="resultCommon">—</div>
+        </div>
+        <div class="result-box">
+          <div class="mini-label">ズレがある価値観</div>
+          <div class="mini-body" id="resultDiff">—</div>
+        </div>
+        <div class="result-box">
+          <div class="mini-label">避けたい条件</div>
+          <div class="mini-body" id="resultAvoid">—</div>
+        </div>
+        <div class="result-box">
+          <div class="mini-label">4分類サマリー</div>
+          <div class="mini-body" id="resultBuckets">—</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta-row">
+      <button class="btn btn-ghost" id="saveDraftBtn">下書きを保存</button>
+      <button class="btn btn-primary disabled" id="submitBtn">結果をまとめる</button>
+    </div>
+  </main>
+</div>
+
+<script>
+  const VALUE_WORDS = [
+    "愛情","安定","意気","一致","一本気","イノベーション","打たれ強さ","影響力","オープンマインド","穏やかさ","落ち着き","思いやり","おもてなし",
+    "快活さ","果敢","賢さ","家族","固い意志","果断","活力","活発","寛大さ","感謝","完全性","寛容さ","期待","機知に富む","気迫","気配り","機敏さ","希望","共感","勤勉","くつろぎ","気高さ","結束","献身","健全さ","謙虚さ","堅固","倹約","現実主義","好奇心","貢献","公正さ","心地よさ","克己心","根気強さ",
+    "最高の","サプライズ","幸せ","自覚","刺激的","自己主張","自己認識","自信","自省","自制","親しみ易さ","実用性","シナジー","自発的","社会貢献","社交的","自由","充足","柔軟性","純粋さ","順応性","勝利","情熱","自力本願","思慮深さ","真実","信条","親切さ","信念","信用","信頼性","静穏","正確さ","正義","清潔感","誠実さ","整然","精力","責任感","積極性","先見性","洗練","創意工夫","創造性","想像力","率直さ","尊重",
+    "体験","大志","大胆さ","タイムリー","卓越","楽しさ","多様性","探求","団結","チームワーク","力","秩序","注意深さ","忠誠心","長期的な","挑戦","調和","直感的","徹底","独創性","独立心",
+    "忍耐","仲間意識","熱意",
+    "博愛心","激しさ","発見","バランス感覚","ひたむきさ","非凡","不屈の精神","プロ意識","平常心","平静","平和","奉仕",
+    "真心","学び","魅力","無我夢中",
+    "柔らかさ","やる気","勇敢さ","勇気","有効性","ユーモア","豊かさ","夢","用意周到","喜び",
+    "楽観主義","理性","リーダーシップ","冷静さ",
+    "分かち合い","ワクワク感"
+  ];
+
+  const DRAFT_KEY = 'shiori_company_values_draft';
+  const VALUE_KEY = 'shiori_katikan_draft';
+  const VISION_KEY = 'shiori_vision_draft';
+
+  function readJson(key){
+    try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
+  }
+
+  const valueDraft = readJson(VALUE_KEY) || {};
+  const visionDraft = readJson(VISION_KEY) || {};
+  const workDraft = readJson(DRAFT_KEY) || {};
+
+  const hasLifeValues = Array.isArray(valueDraft.selectedValues) && valueDraft.selectedValues.length > 0;
+
+  const state = {
+    selectedValues: workDraft.selectedValues || [],
+    primaryValue: workDraft.primaryValue || null,
+    reasons: workDraft.reasons || {},
+    differenceReason: workDraft.differenceReason || '',
+    avoidCompany: workDraft.avoidCompany || '',
+    assignments: workDraft.assignments || {},
+    lifeValues: valueDraft.selectedValues || [],
+    lifePrimary: valueDraft.primaryValue || '',
+    visionSummary: visionDraft.summary || ''
+  };
+
+  const valueGrid = document.getElementById('valueGrid');
+  const pickedWrap = document.getElementById('pickedWrap');
+  const reasonList = document.getElementById('reasonList');
+  const selectedCount = document.getElementById('selectedCount');
+  const primaryValueLabel = document.getElementById('primaryValueLabel');
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if(!hasLifeValues){
+    document.getElementById('lockBanner').style.display = 'flex';
+    document.getElementById('flowBanner').style.display = 'none';
+  }
+
+  function renderValueCards(filterText = ''){
+    valueGrid.innerHTML = '';
+    VALUE_WORDS.filter(word => word.includes(filterText.trim())).forEach(word => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'value-card';
+      if(state.selectedValues.includes(word)) btn.classList.add('sel');
+      if(state.primaryValue === word){
+        btn.classList.remove('sel');
+        btn.classList.add('primary');
+      }
+      btn.textContent = word;
+      btn.addEventListener('click', () => handleValueClick(word));
+      valueGrid.appendChild(btn);
+    });
+  }
+
+  function handleValueClick(word){
+    const isSelected = state.selectedValues.includes(word);
+    if(!isSelected){
+      state.selectedValues.push(word);
+      if(!state.primaryValue) state.primaryValue = word;
+      state.reasons[word] = state.reasons[word] || '';
+      state.assignments[word] = state.assignments[word] || '';
+    } else {
+      if(state.primaryValue === word){
+        const others = state.selectedValues.filter(v => v !== word);
+        if(others.length > 0) state.primaryValue = others[0];
+      } else {
+        state.primaryValue = word;
+      }
+    }
+    renderPicked();
+    renderValueCards(document.getElementById('searchInput').value);
+    renderReasons();
+    renderCompare();
+    renderAssignments();
+    updateProgress();
+  }
+
+  function removeValue(word){
+    state.selectedValues = state.selectedValues.filter(v => v !== word);
+    delete state.reasons[word];
+    delete state.assignments[word];
+    if(state.primaryValue === word) state.primaryValue = state.selectedValues[0] || null;
+    renderPicked();
+    renderValueCards(document.getElementById('searchInput').value);
+    renderReasons();
+    renderCompare();
+    renderAssignments();
+    updateProgress();
+  }
+
+  function renderPicked(){
+    pickedWrap.innerHTML = '';
+    selectedCount.textContent = state.selectedValues.length;
+    primaryValueLabel.textContent = state.primaryValue || '未選択';
+    if(state.selectedValues.length === 0){
+      pickedWrap.innerHTML = '<div class="helper">まだ選択されていません。</div>';
+      return;
+    }
+    state.selectedValues.forEach(word => {
+      const pill = document.createElement('div');
+      pill.className = 'picked-pill' + (state.primaryValue === word ? ' primary' : '');
+      pill.innerHTML = `<span>${word}${state.primaryValue === word ? '（最重要）' : ''}</span><button class="pill-btn" type="button">×</button>`;
+      pill.querySelector('button').addEventListener('click', () => removeValue(word));
+      pickedWrap.appendChild(pill);
+    });
+  }
+
+  function renderReasons(){
+    reasonList.innerHTML = '';
+    if(state.selectedValues.length === 0){
+      reasonList.innerHTML = '<div class="helper">まずは STEP 1 で価値観カードを選んでね。</div>';
+      return;
+    }
+    state.selectedValues.forEach(word => {
+      const item = document.createElement('div');
+      item.className = 'reason-item';
+      item.innerHTML = `
+        <div class="reason-head">
+          <div class="reason-name">${word}<span class="${state.primaryValue === word ? 'primary-badge' : 'normal-badge'}">${state.primaryValue === word ? '最重要' : '選択中'}</span></div>
+        </div>
+        <textarea data-reason="${word}" placeholder="なぜ働く上で『${word}』を大切にしたいのかを書いてみてください。">${state.reasons[word] || ''}</textarea>
+      `;
+      reasonList.appendChild(item);
+    });
+    reasonList.querySelectorAll('textarea').forEach(area => {
+      area.addEventListener('input', e => {
+        state.reasons[e.target.dataset.reason] = e.target.value;
+        updateProgress();
+      });
+    });
+  }
+
+  function getCommonValues(){
+    return state.selectedValues.filter(v => state.lifeValues.includes(v));
+  }
+
+  function getDiffValues(){
+    const common = getCommonValues();
+    const lifeOnly = state.lifeValues.filter(v => !common.includes(v));
+    const workOnly = state.selectedValues.filter(v => !common.includes(v));
+    return { lifeOnly, workOnly };
+  }
+
+  function tagHtml(word, type){
+    return `<span class="tag ${type}">${word}</span>`;
+  }
+
+  function renderCompare(){
+    const common = getCommonValues();
+    const { lifeOnly, workOnly } = getDiffValues();
+
+    const lifeTags = document.getElementById('lifeTags');
+    const workTags = document.getElementById('workTags');
+
+    lifeTags.innerHTML = state.lifeValues.length
+      ? state.lifeValues.map(v => tagHtml(v, common.includes(v) ? 'common' : 'diff')).join('')
+      : '<div class="helper">価値観発掘の保存データがありません。</div>';
+
+    workTags.innerHTML = state.selectedValues.length
+      ? state.selectedValues.map(v => tagHtml(v, common.includes(v) ? 'common' : 'diff')).join('')
+      : '<div class="helper">まだ働く上での価値観が選ばれていません。</div>';
+
+    document.getElementById('commonValues').textContent = common.length ? common.join('、') : '今のところ共通項目はありません';
+
+    const diffParts = [];
+    if(lifeOnly.length) diffParts.push(`人生のみ: ${lifeOnly.join('、')}`);
+    if(workOnly.length) diffParts.push(`働く上でのみ: ${workOnly.join('、')}`);
+    document.getElementById('diffValues').textContent = diffParts.length ? diffParts.join('\n') : '大きなズレはありません';
+  }
+
+  function buildAssignmentItems(){
+    const items = [...state.selectedValues];
+    if(state.avoidCompany.trim()) items.push('避けたい条件');
+    return items;
+  }
+
+  function renderAssignments(){
+    const list = document.getElementById('assignList');
+    list.innerHTML = '';
+    const items = buildAssignmentItems();
+    if(items.length === 0){
+      list.innerHTML = '<div class="helper">価値観を選び、必要なら避けたい条件を書いたあとに分類できます。</div>';
+      renderBucketSummary();
+      return;
+    }
+
+    items.forEach(name => {
+      const row = document.createElement('div');
+      row.className = 'assign-row';
+      const key = name === '避けたい条件' ? '__avoid__' : name;
+      row.innerHTML = `
+        <div class="assign-name">${name}</div>
+        <select data-assign="${key}">
+          <option value="">未分類</option>
+          <option value="Must">Must</option>
+          <option value="Want">Want</option>
+          <option value="Avoid">Avoid</option>
+          <option value="Deal Breaker">Deal Breaker</option>
+        </select>
+      `;
+      list.appendChild(row);
+      const sel = row.querySelector('select');
+      sel.value = state.assignments[key] || '';
+      sel.addEventListener('change', e => {
+        state.assignments[key] = e.target.value;
+        renderBucketSummary();
+        updateProgress();
+      });
+    });
+    renderBucketSummary();
+  }
+
+  function renderBucketSummary(){
+    const buckets = { Must:[], Want:[], Avoid:[], 'Deal Breaker':[] };
+    Object.entries(state.assignments).forEach(([key,val]) => {
+      if(!val || !buckets[val]) return;
+      const label = key === '__avoid__' ? '避けたい条件' : key;
+      buckets[val].push(label);
+    });
+    document.getElementById('bucketMust').textContent = buckets.Must.length ? buckets.Must.join('、') : '—';
+    document.getElementById('bucketWant').textContent = buckets.Want.length ? buckets.Want.join('、') : '—';
+    document.getElementById('bucketAvoid').textContent = buckets.Avoid.length ? buckets.Avoid.join('、') : '—';
+    document.getElementById('bucketDeal').textContent = buckets['Deal Breaker'].length ? buckets['Deal Breaker'].join('、') : '—';
+  }
+
+  function isStepDone(step){
+    if(step === 1) return state.selectedValues.length > 0 && !!state.primaryValue;
+    if(step === 2) return state.selectedValues.length > 0 && state.selectedValues.every(v => (state.reasons[v] || '').trim().length > 0);
+    if(step === 3) return hasLifeValues && state.selectedValues.length > 0;
+    if(step === 4) return state.differenceReason.trim().length > 0;
+    if(step === 5) return state.avoidCompany.trim().length > 0;
+    if(step === 6) return buildAssignmentItems().every(name => {
+      const key = name === '避けたい条件' ? '__avoid__' : name;
+      return (state.assignments[key] || '').length > 0;
+    }) && buildAssignmentItems().length > 0;
+    return false;
+  }
+
+  function updateProgress(){
+    const done = [1,2,3,4,5,6].filter(isStepDone).length;
+    progressFill.style.width = (done / 6 * 100) + '%';
+    progressLabel.textContent = `${done} / 6 STEP COMPLETED`;
+    submitBtn.classList.toggle('disabled', done !== 6 || !hasLifeValues);
+  }
+
+  function buildSummary(){
+    const common = getCommonValues();
+    const { lifeOnly, workOnly } = getDiffValues();
+    const commonText = common.length ? `人生の価値観と共通しているのは「${common.join('、')}」` : '人生の価値観と完全に同じではない';
+    const diffParts = [];
+    if(lifeOnly.length) diffParts.push(`人生では「${lifeOnly.join('、')}」を重視している`);
+    if(workOnly.length) diffParts.push(`働く上では「${workOnly.join('、')}」をより重視したい`);
+    const diffText = diffParts.length ? diffParts.join('。') : '大きなズレはない';
+    return `私は働く上で特に「${state.primaryValue}」を重視したい。${commonText}。${diffText}。その違いについては「${state.differenceReason}」と考えている。避けたい条件は「${state.avoidCompany}」。`; 
+  }
+
+  function persist(){
+    const payload = {
+      selectedValues: state.selectedValues,
+      primaryValue: state.primaryValue,
+      reasons: state.reasons,
+      differenceReason: state.differenceReason,
+      avoidCompany: state.avoidCompany,
+      assignments: state.assignments,
+      summary: buildSummary(),
+      updatedAt: new Date().toISOString()
+    };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
+  }
+
+  function renderResult(){
+    const common = getCommonValues();
+    const { lifeOnly, workOnly } = getDiffValues();
+    document.getElementById('summaryText').textContent = buildSummary();
+    document.getElementById('resultCommon').textContent = common.length ? common.join('、') : '—';
+    document.getElementById('resultDiff').textContent = [
+      lifeOnly.length ? `人生のみ: ${lifeOnly.join('、')}` : '',
+      workOnly.length ? `働く上でのみ: ${workOnly.join('、')}` : ''
+    ].filter(Boolean).join('\n') || '—';
+    document.getElementById('resultAvoid').textContent = state.avoidCompany || '—';
+    document.getElementById('resultBuckets').textContent = [
+      `Must: ${document.getElementById('bucketMust').textContent}`,
+      `Want: ${document.getElementById('bucketWant').textContent}`,
+      `Avoid: ${document.getElementById('bucketAvoid').textContent}`,
+      `Deal Breaker: ${document.getElementById('bucketDeal').textContent}`
+    ].join('\n');
+    const panel = document.getElementById('resultPanel');
+    panel.style.display = 'block';
+    panel.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  document.getElementById('searchInput').addEventListener('input', e => renderValueCards(e.target.value));
+  document.getElementById('differenceReason').addEventListener('input', e => { state.differenceReason = e.target.value; updateProgress(); });
+  document.getElementById('avoidCompany').addEventListener('input', e => {
+    state.avoidCompany = e.target.value;
+    renderAssignments();
+    updateProgress();
+  });
+
+  document.getElementById('saveDraftBtn').addEventListener('click', () => {
+    state.differenceReason = document.getElementById('differenceReason').value;
+    state.avoidCompany = document.getElementById('avoidCompany').value;
+    persist();
+    alert('下書きを保存しました');
+  });
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    if(submitBtn.classList.contains('disabled')) return;
+    state.differenceReason = document.getElementById('differenceReason').value;
+    state.avoidCompany = document.getElementById('avoidCompany').value;
+    persist();
+    renderResult();
+  });
+
+  document.getElementById('differenceReason').value = state.differenceReason;
+  document.getElementById('avoidCompany').value = state.avoidCompany;
+  renderValueCards();
+  renderPicked();
+  renderReasons();
+  renderCompare();
+  renderAssignments();
+  updateProgress();
+</script>
+</body>
+</html>

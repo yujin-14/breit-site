@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breit - ビジョン発掘 (/jikobunseki/vision)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F8F5; --ink:#1A2238; --ink-soft:#4A5170;
+    --teal:#2F7D6B; --teal-deep:#245F52; --coral:#E8674F; --amber:#D9A441;
+    --line:#DEDCD0; --card:#FFFFFF; --bg-soft:#EEF3F1;
+    --shadow:0 1px 2px rgba(26,34,56,.04),0 6px 16px rgba(26,34,56,.06);
+  }
+  *{box-sizing:border-box;min-width:0;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Zen Kaku Gothic New',sans-serif;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .serif{font-family:'Shippori Mincho B1',serif;}
+  .app{display:grid;grid-template-columns:76px 1fr;min-height:100vh;}
+
+  .nav{
+    background:var(--ink);padding:24px 0;display:flex;flex-direction:column;
+    align-items:center;gap:6px;
+  }
+  .nav-logo{
+    width:36px;height:36px;border-radius:8px;background:var(--teal);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:16px;
+    margin-bottom:28px;flex-shrink:0;
+  }
+  .nav-items{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center;}
+  .nav-item{
+    width:52px;padding:10px 0 8px;border-radius:10px 10px 0 0;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    color:#8891AC;cursor:pointer;position:relative;flex-shrink:0;
+  }
+  .nav-item svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;}
+  .nav-item span{font-size:9.5px;white-space:nowrap;}
+  .nav-item.active{color:#fff;background:var(--teal);}
+  .nav-item.active::after{
+    content:"";position:absolute;right:-6px;top:0;bottom:0;width:6px;
+    background:var(--teal);clip-path:polygon(0 0,100% 50%,0 100%);
+  }
+  .nav-item.disabled{color:#4A5170;cursor:default;}
+  .nav-tag{
+    margin-top:auto;writing-mode:vertical-rl;color:#5A6382;font-size:9px;
+    letter-spacing:.15em;padding-top:20px;flex-shrink:0;
+  }
+
+  main{
+    padding:clamp(20px,4vw,40px) clamp(16px,5vw,56px) 100px;
+    max-width:980px;width:100%;
+  }
+
+  .back-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px;}
+  .back-link{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;
+    color:var(--ink-soft);text-decoration:none;
+  }
+  .back-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+  .eyebrow{
+    font-size:12px;color:var(--teal-deep);letter-spacing:.14em;
+    font-weight:700;margin-bottom:8px;
+  }
+  h1{
+    font-family:'Shippori Mincho B1',serif;font-weight:700;
+    font-size:clamp(22px,3vw,28px);margin:0 0 10px;
+  }
+  .lead{
+    color:var(--ink-soft);font-size:13.5px;line-height:1.8;
+    max-width:66ch;margin:0 0 18px;
+  }
+
+  .flow-banner{
+    display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;box-shadow:var(--shadow);margin-bottom:24px;
+  }
+  .flow-chip{
+    font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;
+    background:#EAF2F0;color:var(--teal-deep);white-space:nowrap;
+  }
+  .flow-text{font-size:12.5px;color:var(--ink-soft);line-height:1.8;}
+  .flow-text b{color:var(--ink);}
+
+  .progress-wrap{
+    position:sticky;top:0;background:linear-gradient(var(--paper),var(--paper) 84%,rgba(247,248,245,0));
+    padding:10px 0 16px;z-index:5;margin-bottom:8px;
+  }
+  .progress-track{height:7px;background:#E3E0D2;border-radius:999px;overflow:hidden;}
+  .progress-fill{height:100%;width:0%;background:var(--teal);border-radius:999px;transition:width .28s;}
+  .progress-label{font-size:11.5px;color:var(--ink-soft);margin-top:6px;font-family:'JetBrains Mono',monospace;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:clamp(18px,3vw,28px);box-shadow:var(--shadow);margin-bottom:18px;
+  }
+  .card-head{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+  .step-num{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);
+    border:1px solid var(--teal);border-radius:5px;padding:2px 7px;
+  }
+  .card-title{font-family:'Shippori Mincho B1',serif;font-size:18px;font-weight:700;margin-top:8px;}
+  .card-sub{font-size:12.5px;color:var(--ink-soft);line-height:1.7;margin-top:6px;}
+  .helper{margin-top:9px;font-size:12px;color:var(--ink-soft);line-height:1.7;}
+
+  textarea,input[type="text"]{
+    width:100%;border:1.6px solid var(--line);border-radius:12px;padding:14px 15px;
+    background:var(--paper);font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:14px;color:var(--ink);line-height:1.7;
+  }
+  textarea:focus,input[type="text"]:focus{outline:none;border-color:var(--teal);}
+  textarea{min-height:128px;resize:vertical;}
+  textarea[disabled]{opacity:.65;background:#F3F2EC;cursor:not-allowed;}
+
+  .link-card{
+    background:linear-gradient(180deg,#FFFFFF 0%,#FAFBF8 100%);
+    border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:14px;
+  }
+  .link-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:760px){ .link-grid{grid-template-columns:1fr;} }
+  .mini-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .mini-label{font-size:11px;color:var(--ink-soft);font-weight:700;letter-spacing:.06em;margin-bottom:8px;}
+  .mini-body{font-size:13px;line-height:1.8;color:var(--ink);}
+  .mini-body.soft{color:var(--ink-soft);}
+  .copy-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;}
+
+  .year-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+  .year-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--paper);}
+  .year-head{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .year-title{font-family:'Shippori Mincho B1',serif;font-size:16px;font-weight:700;}
+  .year-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .ghost-chip,.state-chip,.ghost-btn,.mini-btn{
+    border:1.4px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:999px;
+    font-size:11.5px;font-weight:700;padding:7px 11px;cursor:pointer;
+    font-family:'Zen Kaku Gothic New',sans-serif;
+  }
+  .ghost-chip.active{background:#F1EEE3;border-color:#D8CC9C;color:#8A7A3E;}
+  .state-chip{background:#EAF2F0;border-color:var(--teal);color:var(--teal-deep);cursor:default;}
+  .ghost-btn:hover,.mini-btn:hover,.ghost-chip:hover{border-color:#C8C4B5;}
+  .mini-btn{padding:8px 12px;}
+
+  .actions-card textarea,.meaning-card textarea{min-height:144px;}
+
+  .result-panel{
+    display:none;background:linear-gradient(180deg,#FFFFFF 0%,#FAFBF8 100%);
+    border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow);
+    margin-top:8px;
+  }
+  .result-title{font-family:'Shippori Mincho B1',serif;font-size:20px;font-weight:700;margin:0 0 8px;}
+  .result-lead{color:var(--ink-soft);font-size:13.5px;line-height:1.8;margin-bottom:18px;}
+  .summary-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;margin-bottom:18px;}
+  .summary-box p{margin:0;font-size:14px;line-height:1.9;}
+  .vision-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+  @media (max-width:760px){ .vision-columns{grid-template-columns:1fr;} }
+  .vision-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .vision-box .mini-label{margin-bottom:6px;}
+  .vision-box .mini-body{white-space:pre-wrap;word-break:break-word;}
+
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end;margin-top:24px;}
+  .btn{
+    border:none;border-radius:12px;padding:13px 18px;font-size:13.5px;
+    font-weight:700;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;
+  }
+  .btn-ghost{background:#fff;border:1.6px solid var(--line);color:var(--ink-soft);}
+  .btn-primary{background:var(--teal);color:#fff;}
+  .btn-primary.disabled{background:#AAB7B3;cursor:not-allowed;}
+
+/* BREIT BRAND */
+.nav-logo{background:transparent !important;border-radius:0 !important;width:44px !important;height:44px !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;}
+.nav-logo img{width:100%;height:100%;object-fit:contain;display:block;}
+.brand-inline{display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.brand-inline img{display:block;height:auto;}
+
+
+/* BREIT BRAND SYSTEM */
+.nav-logo{background:transparent !important;border-radius:0 !important;width:44px !important;height:44px !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:visible !important;}
+.nav-logo .breit-svg{width:100% !important;height:100% !important;display:block;}
+.breit-lockup{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.breit-lockup--mono .breit-svg{width:58px;height:58px;flex:0 0 auto;}
+.breit-lockup__word{font-family:'Cormorant Garamond','Shippori Mincho B1',serif;font-size:clamp(32px,4vw,48px);font-weight:600;letter-spacing:.02em;color:#2A2620;line-height:1;}
+.breit-lockup__sub{font-size:12px;color:#6B675F;letter-spacing:.12em;line-height:1.7;}
+
+
+/* FINAL UI POLISH */
+:root{
+  --shadow-soft:0 1px 2px rgba(26,34,56,.04),0 12px 28px rgba(26,34,56,.08);
+  --surface-gap:clamp(18px,2.2vw,24px);
+}
+body{line-height:1.6;}
+.app{grid-template-columns:84px minmax(0,1fr) !important;}
+.nav{padding:26px 0 18px !important;gap:8px !important;}
+.nav-logo{width:48px !important;height:48px !important;margin-bottom:24px !important;}
+.nav-items{gap:8px !important;}
+.nav-item{width:56px !important;padding:11px 0 10px !important;border-radius:14px 14px 0 0 !important;transition:background-color .18s ease,color .18s ease,transform .18s ease;}
+.nav-item:hover{transform:translateY(-1px);}
+.nav-item svg{width:20px !important;height:20px !important;}
+.nav-item span{font-size:10px !important;letter-spacing:.03em !important;}
+.nav-tag{padding-top:22px !important;line-height:1.55;}
+main{padding:clamp(28px,4.6vw,52px) clamp(22px,5vw,60px) 96px !important;max-width:1240px !important;}
+.top-row{gap:20px !important;align-items:flex-end !important;margin-bottom:clamp(20px,3vw,28px) !important;}
+.greeting-eyebrow,.eyebrow,.coach-label,.cta-eyebrow,.label,.summary-label,.mini-label,.section-sub,.phase-chip,.chip{letter-spacing:.12em;}
+h1,h1.greeting,.greeting{line-height:1.34 !important;letter-spacing:.01em;}
+.lead,.hero-sub,.phase-text,.banner-text,.card-copy,.summary-sub,.mini-sub,.hero-note,.coach-copy,.cta-sub,.task-note,.fit-reason,.guide-text,.history-empty,.fw-sub,.sub,.banner-text,.check-text,.tl-sub,.insight-body,.hero-caption{line-height:1.9 !important;}
+.grid,.stack,.summary-grid,.hero-grid,.content-grid,.bottom-grid,.matrix,.insight-grid,.reward-grid,.urgent-list,.guide-list,.history-list,.mini-list,.fw-list,.feature-list{gap:var(--surface-gap) !important;}
+.card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.phase-banner,.banner,.goal-card,.cta,.hero-card,.reward-card,.summary-card,.urgent-card{border-radius:20px !important;box-shadow:var(--shadow-soft) !important;}
+.card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.urgent-card{padding:clamp(20px,3vw,28px) !important;}
+.hero-card,.cta,.goal-card{overflow:hidden;}
+.card-head,.section-head,.hero-head{margin-bottom:16px !important;}
+.card-title,.section-title,.hero-title,.coach-title,.cta-title{letter-spacing:.01em;}
+.task,.company-row,.fw-row,.guide-item,.check-item,.history-row,.fit-row,.mini-row,.urgent-item,.metric,.mini,.insight-box,.tl-card,.day-card,.story-pill,.band-card{border-radius:16px !important;}
+.task,.company-row{padding-left:8px !important;padding-right:8px !important;}
+.task-title,.urgent-title,.fit-name,.history-title,.company-name,.tl-title,.fw-name,.main-val,.summary-main,.mini-main{line-height:1.7 !important;}
+.add-btn,.ghost-btn,.link-btn,.cta-btn,.btn,.nav-cta{min-height:44px !important;padding:12px 18px !important;border-radius:12px !important;}
+.view-btn,.filter-chip,.note-chip,.cta-chip,.coach-tag,.hero-chip,.band-chip,.phase-chip,.chip,.step-pill,.fit-pill,.badge,.urgent-pill,.status{border-radius:999px !important;}
+a,button,[role="button"],.nav-item,.filter-chip,.view-btn,.check{transition:all .18s ease;}
+a:hover,button:hover,[role="button"]:hover{filter:saturate(1.02);}
+:focus-visible{outline:2px solid rgba(47,125,107,.45);outline-offset:2px;}
+table{border-radius:20px !important;overflow:hidden;}
+th,td{padding:14px 15px !important;line-height:1.8 !important;}
+@media (max-width:1080px){
+  main{padding-inline:20px !important;}
+}
+@media (max-width:767px){
+  .app{grid-template-columns:1fr !important;}
+  .nav{padding:10px 12px !important;gap:6px !important;}
+  .nav-logo{width:40px !important;height:40px !important;margin-bottom:0 !important;margin-right:10px !important;}
+  .nav-items{gap:6px !important;}
+  .nav-item{width:auto !important;padding:9px 11px !important;border-radius:12px !important;}
+  .nav-item:hover{transform:none;}
+  .nav-item span{font-size:11px !important;}
+  .nav-tag{display:none !important;}
+  main{padding:18px 14px 56px !important;}
+  .top-row{gap:14px !important;}
+  .grid,.summary-grid,.hero-grid,.content-grid,.bottom-grid,.matrix,.insight-grid,.reward-grid,.urgent-list,.hero-metrics,.mini-metrics{gap:12px !important;}
+  .card,.summary-card,.reward-panel,.history-panel,.coach-card,.hero-card,.side-card,.schedule-card,.list-card,.urgent-card{padding:18px !important;}
+  .task,.company-row,.history-row,.guide-item,.check-item,.fit-row,.urgent-item{padding:14px !important;}
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+  <aside class="nav">
+    <div class="nav-logo" aria-label="Breit"><svg class="breit-svg breit-svg-a3" width="140" height="140" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:594:20:2" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:140px;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:none;direction:ltr;display:block;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:140px;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:140px;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:auto;min-height:auto;min-inline-size:auto;min-width:auto;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:hidden;overflow-clip-margin:content-box;overflow-inline:hidden;overflow-wrap:normal;overflow-x:hidden;overflow-y:hidden;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:70px 70px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:none;stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:1px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:70px 70px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:140px;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"><path d="M 28 52 A 12 12 0 0 1 52 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:718:22:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 28 52 A 12 12 0 0 1 52 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><path d="M 20 52 A 20 20 0 0 1 60 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" opacity="0.75" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:849:24:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 20 52 A 20 20 0 0 1 60 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:0.75;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><path d="M 12 52 A 28 28 0 0 1 68 52" stroke="#3d5c3a" stroke-width="2.6" stroke-linecap="round" fill="none" opacity="0.5" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:996:26:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:0px;cy:0px;d:path(&quot;M 12 52 A 28 28 0 0 1 68 52&quot;);direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:none;fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:0.5;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:0px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:rgb(61, 92, 58);stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:2.6px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/><circle cx="40" cy="52" r="2.2" fill="#3d5c3a" data-om-id="jsx:/https:/www.genspark.ai/api/designer2/serve/7c58ecba-47e6-4f2f-b26e-b54528f1bbe1/breit-logo-marks.jsx:1146:28:4" style="accent-color:auto;align-content:normal;align-items:normal;align-self:auto;alignment-baseline:auto;anchor-name:none;anchor-scope:none;animation-composition:replace;animation-delay:0s;animation-direction:normal;animation-duration:0s;animation-fill-mode:none;animation-iteration-count:1;animation-name:none;animation-play-state:running;animation-range-end:normal;animation-range-start:normal;animation-timeline:auto;animation-timing-function:ease;animation-trigger:none;app-region:none;appearance:none;aspect-ratio:auto;backdrop-filter:none;backface-visibility:visible;background-attachment:scroll;background-blend-mode:normal;background-clip:border-box;background-color:rgba(0, 0, 0, 0);background-image:none;background-origin:padding-box;background-position:0% 0%;background-repeat:repeat;background-size:auto;baseline-shift:0px;baseline-source:auto;block-size:auto;border-block-end-color:rgb(0, 0, 0);border-block-end-style:none;border-block-end-width:0px;border-block-start-color:rgb(0, 0, 0);border-block-start-style:none;border-block-start-width:0px;border-bottom-color:rgb(0, 0, 0);border-bottom-left-radius:0px;border-bottom-right-radius:0px;border-bottom-style:none;border-bottom-width:0px;border-collapse:separate;border-end-end-radius:0px;border-end-start-radius:0px;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;border-inline-end-color:rgb(0, 0, 0);border-inline-end-style:none;border-inline-end-width:0px;border-inline-start-color:rgb(0, 0, 0);border-inline-start-style:none;border-inline-start-width:0px;border-left-color:rgb(0, 0, 0);border-left-style:none;border-left-width:0px;border-right-color:rgb(0, 0, 0);border-right-style:none;border-right-width:0px;border-shape:none;border-start-end-radius:0px;border-start-start-radius:0px;border-top-color:rgb(0, 0, 0);border-top-left-radius:0px;border-top-right-radius:0px;border-top-style:none;border-top-width:0px;bottom:auto;box-decoration-break:slice;box-shadow:none;box-sizing:border-box;break-after:auto;break-before:auto;break-inside:auto;buffered-rendering:auto;caption-side:top;caret-animation:auto;caret-color:rgb(0, 0, 0);caret-shape:auto;clear:none;clip:auto;clip-path:none;clip-rule:nonzero;color:rgb(0, 0, 0);color-interpolation:srgb;color-interpolation-filters:linearrgb;color-rendering:auto;color-scheme:normal;column-count:auto;column-fill:balance;column-gap:normal;column-height:auto;column-rule-break:normal;column-rule-color:rgb(0, 0, 0);column-rule-inset-cap-end:0px;column-rule-inset-cap-start:0px;column-rule-inset-junction-end:0px;column-rule-inset-junction-start:0px;column-rule-style:none;column-rule-visibility-items:normal;column-rule-width:1.5px;column-span:none;column-width:auto;column-wrap:auto;contain:none;contain-intrinsic-block-size:none;contain-intrinsic-height:none;contain-intrinsic-inline-size:none;contain-intrinsic-size:none;contain-intrinsic-width:none;container-name:none;container-type:normal;content:normal;content-visibility:visible;corner-bottom-left-shape:round;corner-bottom-right-shape:round;corner-end-end-shape:round;corner-end-start-shape:round;corner-start-end-shape:round;corner-start-start-shape:round;corner-top-left-shape:round;corner-top-right-shape:round;counter-increment:none;counter-reset:none;counter-set:none;cursor:auto;cx:40px;cy:52px;d:none;direction:ltr;display:inline;dominant-baseline:auto;dynamic-range-limit:no-limit;empty-cells:show;field-sizing:fixed;fill:rgb(61, 92, 58);fill-opacity:1;fill-rule:nonzero;filter:none;flex-basis:auto;flex-direction:row;flex-grow:0;flex-line-count:1;flex-shrink:1;flex-wrap:nowrap;float:none;flood-color:rgb(0, 0, 0);flood-opacity:1;font-family:-apple-system, &quot;system-ui&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;font-feature-settings:normal;font-kerning:auto;font-language-override:normal;font-optical-sizing:auto;font-palette:normal;font-size:16px;font-size-adjust:none;font-stretch:100%;font-style:normal;font-synthesis-small-caps:auto;font-synthesis-style:auto;font-synthesis-weight:auto;font-variant:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-emoji:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;font-weight:400;forced-color-adjust:auto;grid-auto-columns:auto;grid-auto-flow:row;grid-auto-rows:auto;grid-column-end:auto;grid-column-start:auto;grid-row-end:auto;grid-row-start:auto;grid-template-areas:none;grid-template-columns:none;grid-template-rows:none;height:auto;hyphenate-character:auto;hyphenate-limit-chars:auto;hyphens:manual;image-orientation:from-image;image-rendering:auto;initial-letter:normal;inline-size:auto;inset-block-end:auto;inset-block-start:auto;inset-inline-end:auto;inset-inline-start:auto;interactivity:auto;interest-delay-end:normal;interest-delay-start:normal;interpolate-size:numeric-only;isolation:auto;justify-content:normal;justify-items:normal;justify-self:auto;left:auto;letter-spacing:normal;lighting-color:rgb(255, 255, 255);line-break:auto;line-height:normal;list-style-image:none;list-style-position:outside;list-style-type:disc;margin-block-end:0px;margin-block-start:0px;margin-bottom:0px;margin-inline-end:0px;margin-inline-start:0px;margin-left:0px;margin-right:0px;margin-top:0px;marker-end:none;marker-mid:none;marker-start:none;mask-clip:border-box;mask-composite:add;mask-image:none;mask-mode:match-source;mask-origin:border-box;mask-position:0% 0%;mask-repeat:repeat;mask-size:auto;mask-type:luminance;math-depth:0;math-shift:normal;math-style:normal;max-block-size:none;max-height:none;max-inline-size:none;max-width:none;min-block-size:0px;min-height:0px;min-inline-size:0px;min-width:0px;mix-blend-mode:normal;object-fit:fill;object-position:50% 50%;object-view-box:none;offset-anchor:auto;offset-distance:0px;offset-path:none;offset-position:normal;offset-rotate:auto 0deg;opacity:1;order:0;orphans:2;outline-color:rgb(0, 0, 0);outline-offset:0px;outline-style:none;outline-width:3px;overflow-anchor:auto;overflow-block:visible;overflow-clip-margin:0px;overflow-inline:visible;overflow-wrap:normal;overflow-x:visible;overflow-y:visible;overlay:none;overscroll-behavior-block:auto;overscroll-behavior-inline:auto;overscroll-behavior-x:auto;overscroll-behavior-y:auto;padding-block-end:0px;padding-block-start:0px;padding-bottom:0px;padding-inline-end:0px;padding-inline-start:0px;padding-left:0px;padding-right:0px;padding-top:0px;paint-order:normal;perspective:none;perspective-origin:0px 0px;pointer-events:auto;position:static;position-anchor:none;position-area:none;position-try-fallbacks:none;position-try-order:normal;position-visibility:anchors-visible;print-color-adjust:economy;quotes:auto;r:2.2px;reading-flow:normal;reading-order:0;resize:none;right:auto;rotate:none;row-gap:normal;row-rule-break:normal;row-rule-color:rgb(0, 0, 0);row-rule-inset-cap-end:0px;row-rule-inset-cap-start:0px;row-rule-inset-junction-end:0px;row-rule-inset-junction-start:0px;row-rule-style:none;row-rule-visibility-items:normal;row-rule-width:1.5px;ruby-align:space-around;ruby-position:over;rule-overlap:row-over-column;rx:auto;ry:auto;scale:none;scroll-behavior:auto;scroll-initial-target:none;scroll-margin-block-end:0px;scroll-margin-block-start:0px;scroll-margin-bottom:0px;scroll-margin-inline-end:0px;scroll-margin-inline-start:0px;scroll-margin-left:0px;scroll-margin-right:0px;scroll-margin-top:0px;scroll-marker-group:none;scroll-padding-block-end:auto;scroll-padding-block-start:auto;scroll-padding-bottom:auto;scroll-padding-inline-end:auto;scroll-padding-inline-start:auto;scroll-padding-left:auto;scroll-padding-right:auto;scroll-padding-top:auto;scroll-snap-align:none;scroll-snap-stop:normal;scroll-snap-type:none;scroll-target-group:none;scroll-timeline-axis:block;scroll-timeline-name:none;scrollbar-color:auto;scrollbar-gutter:auto;scrollbar-width:none;shape-image-threshold:0;shape-margin:0px;shape-outside:none;shape-rendering:auto;speak:normal;stop-color:rgb(0, 0, 0);stop-opacity:1;stroke:none;stroke-dasharray:none;stroke-dashoffset:0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-width:1px;tab-size:8;table-layout:auto;text-align:start;text-align-last:auto;text-anchor:start;text-autospace:no-autospace;text-box-edge:auto;text-box-trim:none;text-combine-upright:none;text-decoration:none;text-decoration-color:rgb(0, 0, 0);text-decoration-line:none;text-decoration-skip-ink:auto;text-decoration-style:solid;text-decoration-thickness:auto;text-emphasis-color:rgb(0, 0, 0);text-emphasis-position:over;text-emphasis-style:none;text-fit:none;text-indent:0px;text-justify:auto;text-orientation:mixed;text-overflow:clip;text-rendering:auto;text-shadow:none;text-size-adjust:auto;text-spacing-trim:normal;text-transform:none;text-underline-offset:auto;text-underline-position:auto;text-wrap-mode:wrap;text-wrap-style:auto;timeline-scope:none;timeline-trigger-activation-range-end:normal;timeline-trigger-activation-range-start:normal;timeline-trigger-active-range-end:auto;timeline-trigger-active-range-start:auto;timeline-trigger-name:none;timeline-trigger-source:auto;top:auto;touch-action:auto;transform:none;transform-box:view-box;transform-origin:0px 0px;transform-style:flat;transition-behavior:normal;transition-delay:0s;transition-duration:0s;transition-property:all;transition-timing-function:ease;translate:none;trigger-scope:none;unicode-bidi:normal;user-select:auto;vector-effect:none;vertical-align:baseline;view-timeline-axis:block;view-timeline-inset:auto;view-timeline-name:none;view-transition-class:none;view-transition-group:normal;view-transition-name:none;view-transition-scope:none;visibility:visible;white-space-collapse:collapse;widows:2;width:auto;will-change:auto;word-break:normal;word-spacing:0px;writing-mode:horizontal-tb;x:0px;y:0px;z-index:auto;zoom:1;-webkit-border-horizontal-spacing:0px;-webkit-border-image:none;-webkit-border-vertical-spacing:0px;-webkit-box-align:stretch;-webkit-box-decoration-break:slice;-webkit-box-direction:normal;-webkit-box-flex:0;-webkit-box-ordinal-group:1;-webkit-box-orient:horizontal;-webkit-box-pack:start;-webkit-box-reflect:none;-webkit-font-smoothing:auto;-webkit-line-break:auto;-webkit-line-clamp:none;-webkit-locale:&quot;ja&quot;;-webkit-mask-box-image:none;-webkit-mask-box-image-outset:0;-webkit-mask-box-image-repeat:stretch;-webkit-mask-box-image-slice:0 fill;-webkit-mask-box-image-source:none;-webkit-mask-box-image-width:auto;-webkit-mask-position-x:0%;-webkit-mask-position-y:0%;-webkit-rtl-ordering:logical;-webkit-ruby-position:before;-webkit-tap-highlight-color:rgba(0, 0, 0, 0.18);-webkit-text-combine:none;-webkit-text-decorations-in-effect:none;-webkit-text-fill-color:rgb(0, 0, 0);-webkit-text-orientation:vertical-right;-webkit-text-security:none;-webkit-text-stroke-color:rgb(0, 0, 0);-webkit-text-stroke-width:0px;-webkit-user-drag:auto;-webkit-user-modify:read-only;-webkit-writing-mode:horizontal-tb;--dc-inv-zoom:1;animation:none;transition:none;"/></svg></div>
+    <div class="nav-items">
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        <span>ホーム</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 9h16"/></svg>
+        <span>予定</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M6 19V8l6-4 6 4v11"/><path d="M9 11h6M9 14h6"/></svg>
+        <span>企業</span>
+      </div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.8-3.6 5-5 8-5s6.2 1.4 8 5"/></svg>
+        <span>自己分析</span>
+      </div>
+      <div class="nav-item disabled">
+        <svg viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>
+        <span>モチベ</span>
+      </div>
+    </div>
+    <div class="nav-tag mono">SHIORI</div>
+  </aside>
+
+  <main>
+    <div class="back-row">
+      <a class="back-link" href="jikobunseki_katikan.html">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        価値観発掘に戻る
+      </a>
+      <a class="back-link" href="jikobunseki.html">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        自己分析ハブに戻る
+      </a>
+    </div>
+
+    <div class="eyebrow mono">SELF ANALYSIS / H2-3</div>
+    <h1>ビジョン発掘</h1>
+    <p class="lead">
+      「将来どうなっていたいか」を、いきなり完璧に決めるページじゃないよ。<br>
+      価値観発掘で見えてきたことをヒントにしながら、1年後・3年後・5年後のイメージを少しずつ言葉にしていくページです。
+    </p>
+
+    <div class="flow-banner">
+      <span class="flow-chip" id="flowChip">価値観発掘から連携中</span>
+      <div class="flow-text" id="flowText">
+        直前の <b>価値観発掘</b> で保存した内容を読み込んでいます。最後に書いた「その先にある未来」を下書きヒントとして使えるようにしてあります。
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 4 STEP COMPLETED</div>
+    </div>
+
+    <section class="card" data-step="0">
+      <div class="card-head">
+        <div>
+          <div class="step-num">LINK</div>
+          <div class="card-title">価値観発掘から引き継いだメモ</div>
+          <div class="card-sub">
+            ここは連携確認用。最重要価値観や、前ページで書いた未来メモを見返しながら進められるようにしてあります。
+          </div>
+        </div>
+      </div>
+
+      <div class="link-card">
+        <div class="link-grid">
+          <div class="mini-box">
+            <div class="mini-label">最重要価値観</div>
+            <div class="mini-body" id="linkedPrimary">未連携</div>
+          </div>
+          <div class="mini-box">
+            <div class="mini-label">この3ヶ月でやること</div>
+            <div class="mini-body soft" id="linkedAction">まだ読み込まれていません</div>
+          </div>
+        </div>
+        <div class="mini-box">
+          <div class="mini-label">価値観発掘で描いた未来メモ（編集OK）</div>
+          <textarea id="seedMemo" placeholder="前のページからの未来メモがここに入ります。未入力なら、自分で書き始めてもOKです。"></textarea>
+        </div>
+        <div class="mini-box">
+          <div class="mini-label">価値観発掘サマリー</div>
+          <div class="mini-body soft" id="linkedSummary">まだ読み込まれていません</div>
+        </div>
+        <div class="copy-row">
+          <div class="helper">下書きメモは、1年後・3年後・5年後の欄にコピーして使えます。</div>
+          <button class="mini-btn" type="button" id="applySeedAllBtn">3つの年次に反映する</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-step="1">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 1</div>
+          <div class="card-title">1年後・3年後・5年後を描いてみる</div>
+          <div class="card-sub">
+            くっきりした目標じゃなくても大丈夫。ぼんやりでも、方向感があればOK。思いつかない年次は、そのまま残しても進められます。
+          </div>
+        </div>
+      </div>
+
+      <div class="year-grid">
+        <div class="year-card">
+          <div class="year-head">
+            <div class="year-title">1年後</div>
+            <div class="year-tools">
+              <button type="button" class="ghost-btn" data-apply-seed="oneYear">引き継ぎメモを反映</button>
+              <button type="button" class="ghost-chip" data-unknown="oneYear">思いつかない</button>
+            </div>
+          </div>
+          <textarea id="oneYear" placeholder="例）自分に合う会社の特徴が見えていて、選考でも落ち着いて話せる状態になっていたい。"></textarea>
+        </div>
+
+        <div class="year-card">
+          <div class="year-head">
+            <div class="year-title">3年後</div>
+            <div class="year-tools">
+              <button type="button" class="ghost-btn" data-apply-seed="threeYear">引き継ぎメモを反映</button>
+              <button type="button" class="ghost-chip" data-unknown="threeYear">思いつかない</button>
+            </div>
+          </div>
+          <textarea id="threeYear" placeholder="例）任された仕事に自分なりの工夫を入れられて、成長実感を持ちながら働けていたい。"></textarea>
+        </div>
+
+        <div class="year-card">
+          <div class="year-head">
+            <div class="year-title">5年後</div>
+            <div class="year-tools">
+              <button type="button" class="ghost-btn" data-apply-seed="fiveYear">引き継ぎメモを反映</button>
+              <button type="button" class="ghost-chip" data-unknown="fiveYear">思いつかない</button>
+            </div>
+          </div>
+          <textarea id="fiveYear" placeholder="例）自分の強みや大切にしたいことを理解した上で、納得感のあるキャリアを選び続けられていたい。"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="card actions-card" data-step="2">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 2</div>
+          <div class="card-title">そのビジョンに近づくために、いつまでに何をする？</div>
+          <div class="card-sub">
+            直近の動きでOK。選考準備、自己分析、OB訪問、企業比較、なんでもありです。
+          </div>
+        </div>
+      </div>
+      <textarea id="actionPlan" placeholder="例）今月中に志望業界を3つに絞る。来月までにOB訪問を2件入れる。夏までに自己PRとガクチカを固める。"></textarea>
+    </section>
+
+    <section class="card meaning-card" data-step="3">
+      <div class="card-head">
+        <div>
+          <div class="step-num">STEP 3</div>
+          <div class="card-title">その実現は、自分にとってどんな意味がある？</div>
+          <div class="card-sub">
+            これは次の「企業選びの価値観発掘」にもつながる大事な言語化。自分にとっての納得感を書いてみてね。
+          </div>
+        </div>
+      </div>
+      <textarea id="meaning" placeholder="例）周りと比べて選ぶんじゃなく、自分の価値観をもとに進路を選べている実感につながる。"></textarea>
+    </section>
+
+    <section class="result-panel" id="resultPanel">
+      <h2 class="result-title">ビジョン発掘のまとめ</h2>
+      <p class="result-lead">
+        将来イメージ・行動・その意味をひとつにまとめたよ。価値観発掘の内容とも連携した状態で保存できます。
+      </p>
+
+      <div class="summary-box">
+        <p id="summaryText">ここに要約が表示されます。</p>
+      </div>
+
+      <div class="vision-columns">
+        <div class="vision-box">
+          <div class="mini-label">1年後</div>
+          <div class="mini-body" id="resultOneYear">—</div>
+        </div>
+        <div class="vision-box">
+          <div class="mini-label">3年後</div>
+          <div class="mini-body" id="resultThreeYear">—</div>
+        </div>
+        <div class="vision-box">
+          <div class="mini-label">5年後</div>
+          <div class="mini-body" id="resultFiveYear">—</div>
+        </div>
+      </div>
+
+      <div class="link-grid">
+        <div class="mini-box">
+          <div class="mini-label">いつまでに何をするか</div>
+          <div class="mini-body" id="resultAction">—</div>
+        </div>
+        <div class="mini-box">
+          <div class="mini-label">それが持つ意味</div>
+          <div class="mini-body" id="resultMeaning">—</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta-row">
+      <button class="btn btn-ghost" id="saveDraftBtn">下書きを保存</button>
+      <button class="btn btn-primary disabled" id="submitBtn">結果をまとめて、次へ進む</button>
+    </div>
+  </main>
+</div>
+
+<script>
+  const VISION_KEY = 'shiori_vision_draft';
+  const VALUE_KEY = 'shiori_katikan_draft';
+  const SEED_KEY = 'shiori_vision_seed';
+  const COMPANY_SEED_KEY = 'shiori_company_values_seed';
+
+  const valueDraft = readJson(VALUE_KEY) || {};
+  const visionDraft = readJson(VISION_KEY) || {};
+
+  const state = {
+    seedMemo: visionDraft.seedMemo || valueDraft.q3 || localStorage.getItem(SEED_KEY) || '',
+    oneYear: visionDraft.oneYear || '',
+    threeYear: visionDraft.threeYear || '',
+    fiveYear: visionDraft.fiveYear || '',
+    oneYearUnknown: !!visionDraft.oneYearUnknown,
+    threeYearUnknown: !!visionDraft.threeYearUnknown,
+    fiveYearUnknown: !!visionDraft.fiveYearUnknown,
+    actionPlan: visionDraft.actionPlan || '',
+    meaning: visionDraft.meaning || '',
+    linkedPrimary: valueDraft.primaryValue || '',
+    linkedAction: valueDraft.q2 || '',
+    linkedSummary: valueDraft.summary || valueDraft.q1 || ''
+  };
+
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function readJson(key){
+    try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
+  }
+
+  function renderLinkedData(){
+    document.getElementById('linkedPrimary').textContent = state.linkedPrimary || '未設定';
+    document.getElementById('linkedAction').textContent = state.linkedAction || 'まだ保存されていません';
+    document.getElementById('linkedSummary').textContent = state.linkedSummary || 'まだ保存されていません';
+    document.getElementById('seedMemo').value = state.seedMemo;
+
+    if(!state.linkedPrimary && !state.seedMemo){
+      document.getElementById('flowChip').textContent = '単独で入力中';
+      document.getElementById('flowText').innerHTML = '前のページの保存内容が見つからなかったので、このページ単体でも入力できるようにしています。あとから価値観発掘とつなげることもOKです。';
+    }
+  }
+
+  function syncInputs(){
+    document.getElementById('oneYear').value = state.oneYear;
+    document.getElementById('threeYear').value = state.threeYear;
+    document.getElementById('fiveYear').value = state.fiveYear;
+    document.getElementById('actionPlan').value = state.actionPlan;
+    document.getElementById('meaning').value = state.meaning;
+    updateUnknownUI('oneYear', state.oneYearUnknown);
+    updateUnknownUI('threeYear', state.threeYearUnknown);
+    updateUnknownUI('fiveYear', state.fiveYearUnknown);
+  }
+
+  function updateUnknownUI(key, isUnknown){
+    const area = document.getElementById(key);
+    const chip = document.querySelector(`[data-unknown="${key}"]`);
+    if(isUnknown){
+      chip.classList.add('active');
+      area.disabled = true;
+      area.placeholder = 'この年次は、いまは思いつかなくても大丈夫。';
+    } else {
+      chip.classList.remove('active');
+      area.disabled = false;
+    }
+  }
+
+  function toggleUnknown(key){
+    const stateKey = `${key}Unknown`;
+    state[stateKey] = !state[stateKey];
+    if(state[stateKey]) state[key] = '';
+    syncInputs();
+    updateProgress();
+  }
+
+  function applySeedToField(key){
+    const seed = document.getElementById('seedMemo').value.trim();
+    if(!seed) return;
+    state[key] = seed;
+    state[`${key}Unknown`] = false;
+    syncInputs();
+    updateProgress();
+  }
+
+  function applySeedAll(){
+    const seed = document.getElementById('seedMemo').value.trim();
+    if(!seed) return;
+    ['oneYear','threeYear','fiveYear'].forEach(key => {
+      if(!state[key].trim()) state[key] = seed;
+      state[`${key}Unknown`] = false;
+    });
+    syncInputs();
+    updateProgress();
+  }
+
+  function isVisionStepDone(){
+    const one = state.oneYear.trim().length > 0 || state.oneYearUnknown;
+    const three = state.threeYear.trim().length > 0 || state.threeYearUnknown;
+    const five = state.fiveYear.trim().length > 0 || state.fiveYearUnknown;
+    return one && three && five;
+  }
+
+  function isStepDone(step){
+    if(step === 1) return state.seedMemo.trim().length > 0 || !!state.linkedPrimary || !!state.linkedSummary;
+    if(step === 2) return isVisionStepDone();
+    if(step === 3) return state.actionPlan.trim().length > 0;
+    if(step === 4) return state.meaning.trim().length > 0;
+    return false;
+  }
+
+  function updateProgress(){
+    const steps = [1,2,3,4].filter(isStepDone).length;
+    progressFill.style.width = (steps / 4 * 100) + '%';
+    progressLabel.textContent = `${steps} / 4 STEP COMPLETED`;
+    submitBtn.classList.toggle('disabled', steps !== 4);
+  }
+
+  function getYearText(text, unknown){
+    return unknown ? '思いつかない（保留中）' : (text.trim() || '—');
+  }
+
+  function buildVisionLine(){
+    return `1年後は${getYearText(state.oneYear, state.oneYearUnknown)}。3年後は${getYearText(state.threeYear, state.threeYearUnknown)}。5年後は${getYearText(state.fiveYear, state.fiveYearUnknown)}。`;
+  }
+
+  function buildSummary(){
+    const primary = state.linkedPrimary ? `そしてその根底には「${state.linkedPrimary}」という価値観がある。` : '';
+    return `私は${buildVisionLine()}そのために${state.actionPlan}。これは私にとって${state.meaning}という意味を持つ。${primary}`.replace(/\s+/g, ' ').trim();
+  }
+
+  function renderResult(){
+    document.getElementById('summaryText').textContent = buildSummary();
+    document.getElementById('resultOneYear').textContent = getYearText(state.oneYear, state.oneYearUnknown);
+    document.getElementById('resultThreeYear').textContent = getYearText(state.threeYear, state.threeYearUnknown);
+    document.getElementById('resultFiveYear').textContent = getYearText(state.fiveYear, state.fiveYearUnknown);
+    document.getElementById('resultAction').textContent = state.actionPlan || '—';
+    document.getElementById('resultMeaning').textContent = state.meaning || '—';
+    const panel = document.getElementById('resultPanel');
+    panel.style.display = 'block';
+    panel.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function persist(){
+    const payload = {
+      seedMemo: state.seedMemo,
+      oneYear: state.oneYear,
+      threeYear: state.threeYear,
+      fiveYear: state.fiveYear,
+      oneYearUnknown: state.oneYearUnknown,
+      threeYearUnknown: state.threeYearUnknown,
+      fiveYearUnknown: state.fiveYearUnknown,
+      actionPlan: state.actionPlan,
+      meaning: state.meaning,
+      linkedPrimary: state.linkedPrimary,
+      linkedSummary: state.linkedSummary,
+      summary: buildSummary(),
+      updatedAt: new Date().toISOString()
+    };
+    localStorage.setItem(VISION_KEY, JSON.stringify(payload));
+    localStorage.setItem(COMPANY_SEED_KEY, JSON.stringify({
+      visionSummary: buildSummary(),
+      linkedPrimary: state.linkedPrimary,
+      meaning: state.meaning,
+      updatedAt: new Date().toISOString()
+    }));
+  }
+
+  document.getElementById('seedMemo').addEventListener('input', e => {
+    state.seedMemo = e.target.value;
+    updateProgress();
+  });
+  document.getElementById('oneYear').addEventListener('input', e => { state.oneYear = e.target.value; updateProgress(); });
+  document.getElementById('threeYear').addEventListener('input', e => { state.threeYear = e.target.value; updateProgress(); });
+  document.getElementById('fiveYear').addEventListener('input', e => { state.fiveYear = e.target.value; updateProgress(); });
+  document.getElementById('actionPlan').addEventListener('input', e => { state.actionPlan = e.target.value; updateProgress(); });
+  document.getElementById('meaning').addEventListener('input', e => { state.meaning = e.target.value; updateProgress(); });
+
+  document.querySelectorAll('[data-unknown]').forEach(btn => {
+    btn.addEventListener('click', () => toggleUnknown(btn.dataset.unknown));
+  });
+  document.querySelectorAll('[data-apply-seed]').forEach(btn => {
+    btn.addEventListener('click', () => applySeedToField(btn.dataset.applySeed));
+  });
+  document.getElementById('applySeedAllBtn').addEventListener('click', applySeedAll);
+
+  document.getElementById('saveDraftBtn').addEventListener('click', () => {
+    state.seedMemo = document.getElementById('seedMemo').value;
+    if(!state.oneYearUnknown) state.oneYear = document.getElementById('oneYear').value;
+    if(!state.threeYearUnknown) state.threeYear = document.getElementById('threeYear').value;
+    if(!state.fiveYearUnknown) state.fiveYear = document.getElementById('fiveYear').value;
+    state.actionPlan = document.getElementById('actionPlan').value;
+    state.meaning = document.getElementById('meaning').value;
+    persist();
+    alert('下書きを保存しました');
+  });
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    if(submitBtn.classList.contains('disabled')) return;
+    state.seedMemo = document.getElementById('seedMemo').value;
+    if(!state.oneYearUnknown) state.oneYear = document.getElementById('oneYear').value;
+    if(!state.threeYearUnknown) state.threeYear = document.getElementById('threeYear').value;
+    if(!state.fiveYearUnknown) state.fiveYear = document.getElementById('fiveYear').value;
+    state.actionPlan = document.getElementById('actionPlan').value;
+    state.meaning = document.getElementById('meaning').value;
+    persist();
+    renderResult();
+    setTimeout(() => {
+      const go = confirm('結果を保存しました。次の「企業選びの価値観発掘」ページへ進みますか？');
+      if(go) window.location.href = 'jikobunseki_company_values.html';
+    }, 260);
+  });
+
+  renderLinkedData();
+  syncInputs();
+  updateProgress();
+</script>
+</body>
+</html>
