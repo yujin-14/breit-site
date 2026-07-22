@@ -220,8 +220,6 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
-
-.task-empty{background:var(--paper);border:1px dashed var(--line);border-radius:14px;padding:18px;color:var(--ink-soft);font-size:13px;line-height:1.8;}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -246,7 +244,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
         <div class="greeting-eyebrow">GOOD MORNING</div>
         <h1 class="greeting">おかえりなさい</h1>
       </div>
-      <div class="phase-chip"><span class="dot"></span>いま：<b>大学3年 6月</b>／サマーインターン期</div>
+      <div class="phase-chip"><span class="dot"></span>いま：<b>未設定</b>／就活フェーズ未設定</div>
     </div>
 
     <div class="grid">
@@ -256,7 +254,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <div class="goal-title">就活の目標</div>
           <div class="goal-text">まだ目標を設定していません</div>
           <div class="goal-bar-track"><div class="goal-bar-fill" style="width:0%"></div></div>
-          <div class="goal-meta"><span>0 / 0 社</span><span>目標を決めるとここに反映されます</span></div>
+          <div class="goal-meta"><span>0 / 0 社</span><span>目標を設定するとここに反映されます</span></div>
         </div>
 
         <div class="card">
@@ -264,12 +262,33 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
             <div class="card-title">今日・今週のタスク <span class="card-num">00</span></div>
             <a class="add-btn" href="schedule.html#open-add">+ タスクを追加</a>
           </div>
-          <div class="task-empty">まだ予定がありません。予定管理から追加すると、ここに表示されます。</div>
+          <div class="task">
+            <div class="check"></div>
+            <div class="task-body"><div class="task-title">予定はまだ登録されていません</div><div class="task-meta"><span class="badge personal">未登録</span></div></div>
+          </div>
+          <div class="task">
+            <div class="check"></div>
+            <div class="task-body"><div class="task-title">予定はまだ登録されていません</div><div class="task-meta"><span class="badge personal">未登録</span></div></div>
+          </div>
+          <div class="task">
+            <div class="check"></div>
+            <div class="task-body"><div class="task-title">予定はまだ登録されていません</div><div class="task-meta"><span class="badge personal">未登録</span></div></div>
+          </div>
+          <div class="task">
+            <div class="check"></div>
+            <div class="task-body"><div class="task-title">予定はまだ登録されていません</div><div class="task-meta"><span class="badge personal">未登録</span></div></div>
+          </div>
+          <div class="task">
+            <div class="check"></div>
+            <div class="task-body"><div class="task-title">予定はまだ登録されていません</div><div class="task-meta"><span class="badge personal">未登録</span></div></div>
+          </div>
         </div>
 
         <div class="card">
           <div class="card-head"><div class="card-title">気になる企業</div><a class="card-link" href="companies_list.html">気になる企業の一覧へ →</a></div>
-          <div class="task-empty">まだ企業が登録されていません。企業一覧から追加すると、ここに表示されます。</div><div class="step-pill">気になる</div></div>
+          <div class="company-row"><div class="company-name">企業はまだ登録されていません</div><div class="step-pill">未設定</div></div>
+          <div class="company-row"><div class="company-name">企業はまだ登録されていません</div><div class="step-pill">未設定</div></div>
+          <div class="company-row"><div class="company-name">企業はまだ登録されていません</div><div class="step-pill">未設定</div></div>
         </div>
 
       </div>
@@ -511,5 +530,6 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     else{ this.innerHTML=''; }
   }));
 </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
