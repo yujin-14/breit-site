@@ -3,6 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="自己分析や企業研究とつながる、Breitの予定管理ページ。">
+<meta name="theme-color" content="#1A2238">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Breit">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="Breit - 予定">
+<meta property="og:description" content="自己分析や企業研究とつながる、Breitの予定管理ページ。">
+<meta property="og:image" content="ogp_breit.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BreitのOGP画像">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Breit - 予定">
+<meta name="twitter:description" content="自己分析や企業研究とつながる、Breitの予定管理ページ。">
+<meta name="twitter:image" content="ogp_breit.png">
 <title>Breit - 予定</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
@@ -246,6 +261,22 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 #scheduleModal input,#scheduleModal select,#scheduleModal textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#fff;font:inherit;color:var(--ink);}
 #scheduleModal textarea{min-height:104px;resize:vertical;}
 button.add-btn{border:none;cursor:pointer;}
+
+/* NAV TEXT FIX */
+.nav-item,.nav-item:link,.nav-item:visited{color:rgba(255,255,255,.92) !important;text-decoration:none !important;}
+.nav-item:hover{color:#fff !important;}
+.nav-item.active,.nav-item.active:link,.nav-item.active:visited{color:#fff !important;}
+.nav-item.disabled{color:#5A6382 !important;}
+.nav-item svg{stroke:currentColor !important;}
+
+
+/* SCHEDULE MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,34,56,.42);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;}
+.modal-overlay.show{display:flex;}
+.modal-card{background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow-soft, var(--shadow));padding:24px;max-width:520px;width:min(92vw,520px);}
+.modal-title{font-family:'Shippori Mincho B1',serif;font-size:22px;font-weight:700;margin-bottom:16px;}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:12px;flex-wrap:wrap;}
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -272,7 +303,7 @@ button.add-btn{border:none;cursor:pointer;}
         <p class="lead">やることを整理して、今日の一歩を迷わず進めるためのページです。自己分析で見えてきた軸や気になる企業とつなげながら、予定をわかりやすく管理できます。</p>
       </div>
       <div class="top-actions">
-        <button class="add-btn" id="openScheduleModal">＋ 予定を追加</button>
+        <button type="button" class="add-btn" id="openScheduleModal" onclick="openScheduleModal()">＋ 予定を追加</button>
       </div>
     </div>
 
