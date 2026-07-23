@@ -180,6 +180,15 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
+
+/* SELF ANALYSIS FINAL POLISH */
+.lead{max-width:72ch;}
+.path-banner,.flow-banner,.lock-banner,.status-banner{box-shadow:0 12px 28px rgba(26,34,56,.06);border:1px solid rgba(63,105,68,.12);}
+.result-panel,.module,.year-card,.card{box-shadow:0 14px 30px rgba(26,34,56,.06);}
+.result-panel p,.module-result,.module-desc,.card-sub{line-height:1.85;}
+.rec-note{margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(244,238,226,.72);color:var(--muted);line-height:1.8;}
+.module-result{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;}
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -348,14 +357,14 @@ function getResultMessage(payload){
   if(payload.dominant === 'A'){
     return {
       title:'価値観型寄り',
-      note:'価値観型は、日々大切にしていることを積み上げていく中で納得感のあるキャリアを形成していくタイプです。\nまずは「価値観発掘」から、自分が大切にしたいことを言語化していくのがおすすめ。',
+      note:'価値観型は、日々大切にしていることを積み上げていく中で納得感のあるキャリアを形成していくタイプです。\nまずは「価値観発掘」から、自分が大切にしたいことを言語化していくのがおすすめ。4モジュールは全員実施で、ここではおすすめ順だけが変わります。',
       href:'jikobunseki_katikan.html',
       cta:'価値観発掘に進む →'
     };
   }
   return {
     title:'ビジョン型寄り',
-    note:'ビジョン型は、先に目指したい未来のイメージを描くことで行動しやすくなるタイプです。\nまずは「ビジョン発掘」から、1年後・3年後・5年後の将来像を言語化していくのがおすすめ。',
+    note:'ビジョン型は、先に目指したい未来のイメージを描くことで行動しやすくなるタイプです。\nまずは「ビジョン発掘」から、1年後・3年後・5年後の将来像を言語化していくのがおすすめ。4モジュールは全員実施で、ここではおすすめ順だけが変わります。',
     href:'jikobunseki_vision.html',
     cta:'ビジョン発掘に進む →'
   };
@@ -378,7 +387,7 @@ function renderResult(payload, save = true){
     localStorage.setItem(RESULT_KEY, JSON.stringify(payload));
     saveDraft();
     document.getElementById('statusChip').textContent = '診断結果を保存しました';
-    document.getElementById('statusText').innerHTML = 'タイプ診断の結果は <b>自己分析ハブ</b> に反映されます。次はおすすめ導線に沿って進めればOK。';
+    document.getElementById('statusText').innerHTML = 'タイプ診断の結果は <b>自己分析ハブ</b> に反映されます。4モジュールは全員実施で、次はおすすめ順の最初のモジュールへ進めばOK。';
   }
 }
 

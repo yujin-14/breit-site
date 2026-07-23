@@ -311,6 +311,15 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
+
+/* SELF ANALYSIS FINAL POLISH */
+.lead{max-width:72ch;}
+.path-banner,.flow-banner,.lock-banner,.status-banner{box-shadow:0 12px 28px rgba(26,34,56,.06);border:1px solid rgba(63,105,68,.12);}
+.result-panel,.module,.year-card,.card{box-shadow:0 14px 30px rgba(26,34,56,.06);}
+.result-panel p,.module-result,.module-desc,.card-sub{line-height:1.85;}
+.rec-note{margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(244,238,226,.72);color:var(--muted);line-height:1.8;}
+.module-result{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;}
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -345,7 +354,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     <h1>企業選びの価値観発掘</h1>
     <p class="lead">
       ここでは「人生で大切なこと」とは少し切り分けて、<b>働く上で何を重視したいか</b>を整理していくよ。<br>
-      似ているところも、ちょっとズレるところも、どっちも大事なヒントです。
+      似ているところも、ちょっとズレるところも、どっちも大事なヒント。自己分析4モジュールの最後で、企業比較に変換するパートです。
     </p>
 
     <div class="flow-banner" id="flowBanner">
@@ -374,7 +383,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <div class="step-num">STEP 1</div>
           <div class="card-title">働く上で大切にしたい価値観を選ぶ</div>
           <div class="card-sub">
-            「人生全体で大事」ではなく、<b>仕事・職場・働き方</b>の文脈でしっくりくるものを5つ前後選んでみてね。いちばん大事なものは濃い緑になります。
+            「人生全体で大事」ではなく、<b>仕事・職場・働き方</b>の文脈でしっくりくるものを<b>最大5つまで</b>選んでみてね。いちばん大事なものは濃い緑になります。
           </div>
         </div>
       </div>
@@ -384,12 +393,12 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
           <input type="text" id="searchInput" placeholder="価値観ワードを検索">
         </div>
-        <div class="count-note">選択中 <span class="mono" id="selectedCount">0</span> 件 / 最重要 <span class="mono" id="primaryValueLabel">未選択</span></div>
+        <div class="count-note">選択中 <span class="mono" id="selectedCount">0</span> / 5 件 / 最重要 <span class="mono" id="primaryValueLabel">未選択</span></div>
       </div>
 
       <div class="value-grid" id="valueGrid"></div>
       <div class="picked-wrap" id="pickedWrap"></div>
-      <div class="helper">※ まず複数選択 → 最重要にしたいカードをもう一度押す仕様。5つ前後が目安だよ。</div>
+      <div class="helper">※ まず最大5つまで選択 → 最重要にしたいカードをもう一度押す仕様です。</div>
     </section>
 
     <section class="card" data-step="2">
@@ -555,6 +564,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   ];
 
   const DRAFT_KEY = 'shiori_company_values_draft';
+  const MAX_VALUES = 5;
   const VALUE_KEY = 'shiori_katikan_draft';
   const VISION_KEY = 'shiori_vision_draft';
 
@@ -614,6 +624,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   function handleValueClick(word){
     const isSelected = state.selectedValues.includes(word);
     if(!isSelected){
+      if(state.selectedValues.length >= MAX_VALUES){
+        alert('働く上での価値観は最大5つまで選べるよ。');
+        return;
+      }
       state.selectedValues.push(word);
       if(!state.primaryValue) state.primaryValue = word;
       state.reasons[word] = state.reasons[word] || '';
@@ -869,6 +883,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     state.avoidCompany = document.getElementById('avoidCompany').value;
     persist();
     renderResult();
+    setTimeout(() => {
+      const go = confirm('結果を保存しました。自己分析ハブへ戻りますか？');
+      if(go) window.location.href = 'jikobunseki.html';
+    }, 260);
   });
 
   document.getElementById('differenceReason').value = state.differenceReason;

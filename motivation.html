@@ -222,10 +222,32 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 .nav-logo{text-decoration:none;color:inherit;}
 
 /* MOTIVATION CLEANUP */
-.phase-banner,.summary-card{display:none !important;}
+.phase-banner,.summary-card{display:block !important;}
 .reward-target{display:block;padding-right:118px;line-height:1.6;}
 .reward-tag,.focus-tag,.lock-badge{z-index:2;}
 @media (max-width:767px){.reward-target{padding-right:0;margin-top:8px;}}
+.phase-banner{display:flex !important;align-items:flex-start;gap:14px;padding:18px 20px;border:1px solid rgba(63,105,68,.18);background:linear-gradient(135deg,rgba(244,238,226,.92),rgba(255,255,255,.7));border-radius:20px;margin:0 0 22px;box-shadow:0 12px 24px rgba(26,34,56,.06);}
+.summary-card{display:block !important;}
+.action-lab{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin:22px 0;}
+.action-card{background:#fff;border:1px solid rgba(63,105,68,.14);border-radius:24px;padding:22px;box-shadow:0 16px 32px rgba(26,34,56,.07);}
+.today-list{display:grid;gap:12px;margin-top:14px;}
+.today-item{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px;background:rgba(244,238,226,.76);border:1px solid rgba(63,105,68,.1);}
+.today-no{width:28px;height:28px;border-radius:999px;background:var(--teal);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:0 0 auto;margin-top:2px;}
+.today-main{font-size:14px;line-height:1.85;color:var(--ink);}
+.today-sub{font-size:12px;line-height:1.7;color:var(--muted);margin-top:3px;}
+.counter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px;}
+.counter-box{padding:16px;border-radius:18px;background:linear-gradient(180deg,rgba(244,238,226,.88),rgba(255,255,255,.98));border:1px solid rgba(63,105,68,.12);}
+.counter-label{font-size:12px;color:var(--muted);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;}
+.counter-value{font-size:34px;line-height:1;font-family:"JetBrains Mono",monospace;color:var(--ink);margin-bottom:12px;}
+.counter-actions{display:flex;flex-wrap:wrap;gap:8px;}
+.quick-btn{border:none;background:var(--teal);color:#fff;padding:10px 12px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;}
+.quick-btn.subtle{background:rgba(63,105,68,.12);color:var(--teal);}
+.helper-line{font-size:12px;line-height:1.7;color:var(--muted);margin-top:12px;}
+.reward-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.reward-action{border:none;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:700;cursor:pointer;background:rgba(26,34,56,.08);color:var(--ink);}
+.reward-action.primary{background:var(--coral);color:#fff;}
+@media (max-width:960px){.action-lab{grid-template-columns:1fr;}.counter-grid{grid-template-columns:1fr 1fr;}}
+@media (max-width:767px){.phase-banner{padding:16px 16px;margin-bottom:18px;}.action-card{padding:18px;}.counter-grid{grid-template-columns:1fr;}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -254,8 +276,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     </div>
 
     <div class="phase-banner">
-      <span class="phase-chip">自己分析の活用フェーズ</span>
-      <div class="phase-text">現状は <b>自己分析ページ群の保存連携が進み、次は毎日の行動と企業研究へ反映していく段階</b>。完了済みの内容はご褒美の見せ方に反映し、未完了の内容は次アクションとして優しく背中を押す設計にしています。</div>
+      <span class="phase-chip" id="phaseChip">自己分析の活用フェーズ</span>
+      <div class="phase-text" id="phaseText">現状は <b>自己分析ページ群の保存連携が進み、次は毎日の行動と企業研究へ反映していく段階</b>。完了済みの内容はご褒美の見せ方に反映し、未完了の内容は次アクションとして優しく背中を押す設計にしています。</div>
     </div>
 
     <section class="hero-grid">
@@ -331,6 +353,46 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       </div>
     </section>
 
+    <section class="action-lab">
+      <div class="action-card">
+        <div class="section-head">
+          <div>
+            <div class="section-title">今日の進め方</div>
+            <div class="section-sub">今の進行段階に合わせて、やることを3つにしぼって見せるよ</div>
+          </div>
+        </div>
+        <div class="today-list" id="todayList"></div>
+      </div>
+
+      <div class="action-card">
+        <div class="section-head">
+          <div>
+            <div class="section-title">行動カウンター</div>
+            <div class="section-sub">タスク数と連続日数をここで軽く更新。ご褒美の進捗にもそのまま反映されます</div>
+          </div>
+        </div>
+        <div class="counter-grid">
+          <div class="counter-box">
+            <div class="counter-label">Tasks</div>
+            <div class="counter-value" id="taskCountInline">0</div>
+            <div class="counter-actions">
+              <button class="quick-btn subtle" id="taskMinusBtn">−1</button>
+              <button class="quick-btn" id="taskPlusBtn">＋1</button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-label">Streak</div>
+            <div class="counter-value" id="streakCountInline">0日</div>
+            <div class="counter-actions">
+              <button class="quick-btn subtle" id="streakResetBtn">リセット</button>
+              <button class="quick-btn" id="streakPlusBtn">＋1日</button>
+            </div>
+          </div>
+        </div>
+        <div class="helper-line">数字を動かすと、達成率・ご褒美の解放状態・履歴の導線まで連動する設計だよ。</div>
+      </div>
+    </section>
+
     <section class="reward-panel">
       <div class="section-head">
         <div>
@@ -367,6 +429,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
   }
 
+  const CURRENT_DATE = new Date().toISOString().slice(0,10);
   const typeResult = readJson('shiori_type_result');
   const valueDraft = readJson('shiori_katikan_draft');
   const visionDraft = readJson('shiori_vision_draft');
@@ -384,10 +447,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   const demoHistoryTitles = ['お気に入りのカフェでケーキを食べる（10タスク達成）','前から気になってた映画を見に行く（25タスク達成）'];
 
   function sanitizeRewards(items){
-    return Array.isArray(items) ? items.filter(item => item && !demoRewardTitles.includes(item.title)) : [];
+    return Array.isArray(items) ? items.filter(item => item && item.title && !demoRewardTitles.includes(item.title)) : [];
   }
   function sanitizeHistory(items){
-    return Array.isArray(items) ? items.filter(item => item && !demoHistoryTitles.includes(item.title)) : [];
+    return Array.isArray(items) ? items.filter(item => item && item.title && !demoHistoryTitles.includes(item.title)) : [];
   }
 
   const savedState = readJson(motivationKey) || {};
@@ -395,19 +458,20 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   const cleanedHistory = sanitizeHistory(savedState.history);
   const demoCounter = Number(savedState.taskCount) === 27 && Number(savedState.streakDays) === 3 && cleanedRewards.length === 0 && cleanedHistory.length === 0;
   const state = {
-    taskCount: demoCounter ? 0 : Number(savedState.taskCount ?? defaultState.taskCount),
-    streakDays: demoCounter ? 0 : Number(savedState.streakDays ?? defaultState.streakDays),
+    taskCount: demoCounter ? 0 : Math.max(0, Number(savedState.taskCount ?? defaultState.taskCount)),
+    streakDays: demoCounter ? 0 : Math.max(0, Number(savedState.streakDays ?? defaultState.streakDays)),
     rewards: cleanedRewards.length ? cleanedRewards : defaultState.rewards,
     history: cleanedHistory.length ? cleanedHistory : defaultState.history
   };
 
-  const status = {
+  const statuses = {
     type: !!typeResult,
     value: !!(valueDraft && valueDraft.summary),
     vision: !!(visionDraft && visionDraft.summary),
     company: !!(companyDraft && companyDraft.summary)
   };
-  const doneCount = Object.values(status).filter(Boolean).length;
+  const doneCount = Object.values(statuses).filter(Boolean).length;
+  const typeDominant = typeResult?.dominant === 'B' || typeResult?.result === 'vision' ? 'vision' : 'value';
 
   function saveState(){
     localStorage.setItem(motivationKey, JSON.stringify(state));
@@ -415,61 +479,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
   function dominantTypeLabel(){
     if(!typeResult) return '未保存';
-    return (typeResult.result === 'vision' || typeResult.dominant === 'B') ? 'ビジョン型寄り' : '価値観型寄り';
+    return typeDominant === 'vision' ? 'ビジョン型寄り' : '価値観型寄り';
   }
-
-  function nextAction(){
-    let next = {
-      title:'タイプ診断',
-      href:'jikobunseki_type.html',
-      label:'自己分析を進める →',
-      note:'まずはタイプ診断から。進み方の入口が見えると、次の行動がかなり決めやすくなる。'
-    };
-
-    if(typeResult && !status.value && (typeResult.result === 'value' || typeResult.dominant === 'A')){
-      next = {
-        title:'価値観発掘',
-        href:'jikobunseki_katikan.html',
-        label:'価値観発掘へ進む →',
-        note:'いまは「自分が何を大事にしたいか」を言葉にしていくタイミング。納得感のあるモチベにつながりやすい。'
-      };
-    }
-    if(typeResult && !status.vision && (typeResult.result === 'vision' || typeResult.dominant === 'B')){
-      next = {
-        title:'ビジョン発掘',
-        href:'jikobunseki_vision.html',
-        label:'ビジョン発掘へ進む →',
-        note:'先に未来像を描くと、日々のタスクが「何のためか」に結びついてやる気が続きやすい。'
-      };
-    }
-    if(status.value && !status.vision){
-      next = {
-        title:'ビジョン発掘',
-        href:'jikobunseki_vision.html',
-        label:'ビジョン発掘へ進む →',
-        note:'価値観が見えてきた今、次は1年後・3年後・5年後の景色までつなげるとモチベが具体化する。'
-      };
-    }
-    if(status.value && status.vision && !status.company){
-      next = {
-        title:'企業選びの価値観発掘',
-        href:'jikobunseki_company_values.html',
-        label:'企業選びの価値観発掘へ →',
-        note:'自己分析の結果を企業選びに変換していく段階。比較軸が固まると迷い疲れが減りやすい。'
-      };
-    }
-    if(status.company){
-      next = {
-        title:'企業研究・志望動機づくり',
-        href:'companies_list.html',
-        label:'企業一覧へ進む →',
-        note:'自己分析の主要モジュールはかなり揃った状態。ここからは企業比較や志望動機へ落とし込むフェーズ。'
-      };
-    }
-    return next;
-  }
-
-  const next = nextAction();
 
   function clipText(text, limit){
     const value = (text || '').trim();
@@ -479,11 +490,63 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
   function primaryValue(){ return valueDraft?.primaryValue || '未設定'; }
 
+  function nextAction(){
+    if(!statuses.type){
+      return {
+        title:'タイプ診断', href:'jikobunseki_type.html', label:'タイプ診断へ進む →',
+        note:'まだ自己分析の入口前。まずはタイプ診断で、おすすめ順の分岐を見つける段階だよ。'
+      };
+    }
+    if(typeDominant === 'value' && !statuses.value){
+      return {
+        title:'価値観発掘', href:'jikobunseki_katikan.html', label:'価値観発掘へ進む →',
+        note:'価値観型寄りだから、今は価値観発掘から入るのがおすすめ。ここで土台を作る段階。'
+      };
+    }
+    if(typeDominant === 'vision' && !statuses.vision){
+      return {
+        title:'ビジョン発掘', href:'jikobunseki_vision.html', label:'ビジョン発掘へ進む →',
+        note:'ビジョン型寄りだから、今はビジョン発掘から入るのがおすすめ。未来像を先に描く段階。'
+      };
+    }
+    if(statuses.type && statuses.value && !statuses.vision){
+      return {
+        title:'ビジョン発掘', href:'jikobunseki_vision.html', label:'ビジョン発掘へ進む →',
+        note:'価値観発掘は完了済み。次は未来像につなげて、行動の意味づけを強める段階。'
+      };
+    }
+    if(statuses.type && statuses.vision && !statuses.value){
+      return {
+        title:'価値観発掘', href:'jikobunseki_katikan.html', label:'価値観発掘へ進む →',
+        note:'ビジョン発掘は完了済み。次はその未来を支える価値観を言葉にする段階。'
+      };
+    }
+    if(statuses.value && statuses.vision && !statuses.company){
+      return {
+        title:'企業選びの価値観発掘', href:'jikobunseki_company_values.html', label:'企業選びの価値観発掘へ進む →',
+        note:'価値観とビジョンの土台がある今、企業比較に使える軸へ変換する段階だよ。'
+      };
+    }
+    return {
+      title:'企業研究・志望動機づくり', href:'companies_list.html', label:'企業一覧へ進む →',
+      note:'自己分析4モジュールは完了。ここからは企業比較と志望動機へ落とし込む活用段階。'
+    };
+  }
+
+  function phaseInfo(){
+    if(!statuses.type) return { chip:'自己分析の入口前', text:'現状は <b>自己分析の入口に入る前の段階</b>。まずはタイプ診断で、自分に合うおすすめ順を見つけるフェーズだよ。' };
+    if(statuses.type && !statuses.value && !statuses.vision) return { chip:'おすすめ順に着手する段階', text:`現状は <b>${dominantTypeLabel()}</b> のおすすめ順に沿って、最初の自己分析モジュールへ進む段階。4モジュールは全員実施だけど、入口の順番だけが変わる設計です。` };
+    if((statuses.value || statuses.vision) && !statuses.company) return { chip:'自己分析をつなげる段階', text:'現状は <b>価値観とビジョンをつなげて、企業比較の前提を整える段階</b>。今のご褒美や応援文も、その進み具合に合わせて最適化しています。' };
+    return { chip:'活用フェーズ', text:'現状は <b>自己分析の結果を企業研究・比較・志望動機づくりへ活用していく段階</b>。モチベは「考えるため」より「選び切るため」に使うフェーズです。' };
+  }
+
+  const next = nextAction();
+
   function heroProgressPct(){
-    const baseTarget = 100;
-    const taskPct = Math.min(100, Math.round((state.taskCount / baseTarget) * 100));
+    const taskTarget = 40;
+    const taskPct = Math.min(100, Math.round((state.taskCount / taskTarget) * 100));
     const modulePct = Math.round((doneCount / 4) * 100);
-    return Math.round(taskPct * 0.7 + modulePct * 0.3);
+    return Math.round(taskPct * 0.65 + modulePct * 0.35);
   }
 
   function coachMessage(){
@@ -491,101 +554,79 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     const vision = clipText(visionDraft?.summary || '', 70);
     const type = dominantTypeLabel();
 
-    if(status.company){
+    if(statuses.company){
       return {
-        title:'ここからは「選ぶ勇気」を支えるモチベ設計でいこ',
-        copy:`タイプ診断は ${type}、最重要価値観は「${pv}」。自己分析の主要モジュールがかなり揃ってるから、今はやる気を“考えるため”じゃなく“選ぶため”に使う段階だよ。企業研究や志望動機づくりで迷ったら、「その会社が自分のMustとつながるか」で戻ってきてOK。`,
-        tags:['自己分析→企業比較','納得感ベース','選ぶフェーズ']
+        title:'ここからは「選ぶ理由」を切らさない設計でいこ',
+        copy:`タイプ診断は ${type}、最重要価値観は「${pv}」。自己分析の主要モジュールが揃った今は、やる気を“整理するため”じゃなく“比較して選ぶため”に使う段階だよ。迷ったら「その会社が自分の軸とつながるか」に戻ればOK。`,
+        tags:['自己分析完了','企業比較フェーズ','選ぶ理由を保つ']
       };
     }
-    if(status.vision){
+    if(statuses.value && statuses.vision){
       return {
-        title:'未来像が見えてきた今、行動の意味づけが強いタイミング',
-        copy:`${vision ? 'いま見えている将来像は「' + vision + '」。' : ''}ここまで来たら、次は企業選びの価値観発掘で「働く上で何を譲れないか」を固めると、行動の優先順位がかなり楽になるよ。`,
-        tags:['将来像あり','比較軸づくり前','ブレ防止']
+        title:'比較軸に変える前の、かなりいい仕上がり段階',
+        copy:`最重要価値観は「${pv}」。${vision ? '今見えている将来像もちゃんとあるから、' : ''}次は企業選びの価値観発掘で「働く上で何を譲れないか」に落とし込むと、モチベがブレにくくなるよ。`,
+        tags:['土台できてる','次は比較軸','ブレ防止']
       };
     }
-    if(status.value){
+    if(statuses.value){
       return {
-        title:'価値観が見えた今こそ、モチベが“自分ごと化”しやすい',
-        copy:`最重要価値観は「${pv}」。ご褒美も、ただ豪華にするより「その価値観が満たされるもの」に寄せると続きやすいよ。次はビジョン発掘で、価値観を未来の景色につなげちゃお。`,
+        title:'価値観が見えた今こそ、モチベが自分ごと化しやすい',
+        copy:`最重要価値観は「${pv}」。ご褒美も、ただ豪華にするより「その価値観が満たされるもの」に寄せると続きやすいよ。次はビジョン発掘で、その価値観を未来の景色につなげちゃお。`,
         tags:[`価値観:${pv}`,'未来につなぐ前','自分ごと化']
       };
     }
-    if(status.type){
+    if(statuses.vision){
       return {
-        title:'入口は見えたから、次は中身を埋める番だよ',
-        copy:`診断結果は ${type}。いまは「どんな自分でいたいか」を言葉にしていく最初の伸びどき。小さくても入力を進めるほど、モチベの理由がハッキリしてきて踏ん張りやすくなる。`,
-        tags:[type,'入口フェーズ','次の一歩重視']
+        title:'未来像が見えた今、意味づけの強さがかなり武器',
+        copy:`${vision ? '今見えている将来像は「' + vision + '」。' : ''}次は価値観発掘で、その未来を支える「大切にしたいもの」を言葉にすると、行動の納得感がかなり上がるよ。`,
+        tags:['将来像あり','次は価値観','意味づけ強化']
+      };
+    }
+    if(statuses.type){
+      return {
+        title:'入口は見えたから、次はおすすめ順の1歩目だけでOK',
+        copy:`診断結果は ${type}。いきなり全部やらなくても大丈夫で、今はおすすめ順の最初のモジュールに着手するだけで十分前進。`,
+        tags:[type,'入口フェーズ','最初の1歩']
       };
     }
     return {
-      title:'まずは自己分析の入口だけでも触ってみよ〜',
-      copy:'まだ自己分析が未着手なら、最初はタイプ診断で十分。いきなり全部やろうとしなくてOKで、入口が見えるだけでもやる気はかなり整いやすいよ。',
+      title:'まずは入口に触れるだけでも全然えらい',
+      copy:'まだ自己分析が未着手なら、最初はタイプ診断だけで十分。入口が見えるだけでも、やる気ってかなり整いやすいよ。',
       tags:['未着手OK','まず入口','小さく開始']
     };
   }
 
   function getPresetReward(){
     const pv = primaryValue();
-    if(status.company){
-      return {
-        id:'preset-company',
-        title:`「${pv}」が満たされそうな企業を3社比較したら、好きなランチ`,
-        target:35,
-        note:'企業比較フェーズに入った今向け。自己分析の結果を行動に変えた時のご褒美。',
-        achievedDate:'',
-        focus:true
-      };
+    if(statuses.company){
+      return { id:'preset-company', title:`「${pv}」がつながる企業を3社比較できたら、好きなランチ`, target:18, note:'企業比較フェーズ向け。自己分析を実行に変えた日のご褒美。', achievedDate:'', focus:true };
     }
-    if(status.vision){
-      return {
-        id:'preset-vision',
-        title:'企業選びの軸を言語化できたら、ちょっと良いスイーツ',
-        target:32,
-        note:'ビジョンの次は比較軸づくり。もう一段ギアを上げる用のご褒美。',
-        achievedDate:'',
-        focus:true
-      };
+    if(statuses.value && statuses.vision){
+      return { id:'preset-bridge', title:'企業選びの軸をまとめきれたら、ちょっと良いスイーツ', target:14, note:'価値観とビジョンの橋渡しが進んだ時のご褒美。', achievedDate:'', focus:true };
     }
-    if(status.value){
-      return {
-        id:'preset-value',
-        title:`「${pv}」を感じられる場所でひと息つく`,
-        target:30,
-        note:'価値観が見えてきた今向け。自分の軸とご褒美をそろえると続きやすい。',
-        achievedDate:'',
-        focus:true
-      };
+    if(statuses.value){
+      return { id:'preset-value', title:`「${pv}」を感じられる場所でひと息つく`, target:10, note:'価値観が見えた今向け。自分の軸とご褒美をそろえる設計。', achievedDate:'', focus:true };
     }
-    if(status.type){
-      return {
-        id:'preset-type',
-        title:'次の自己分析モジュールまで進めたら、推しドリンクを買う',
-        target:28,
-        note:'診断の次の一歩を踏みやすくする小さめご褒美。',
-        achievedDate:'',
-        focus:true
-      };
+    if(statuses.vision){
+      return { id:'preset-vision', title:'未来メモを書き切れたら、推しドリンクを買う', target:10, note:'ビジョン発掘から価値観発掘へつなぐ時の小さめご褒美。', achievedDate:'', focus:true };
     }
-    return {
-      id:'preset-start',
-      title:'タイプ診断を完了したら、好きなおやつタイム',
-      target:28,
-      note:'最初の一歩を軽くするスタート用ご褒美。',
-      achievedDate:'',
-      focus:true
-    };
+    if(statuses.type){
+      return { id:'preset-type', title:'次の自己分析モジュールまで進めたら、好きなおやつタイム', target:6, note:'診断の次の一歩を踏みやすくするスタート用ご褒美。', achievedDate:'', focus:true };
+    }
+    return { id:'preset-start', title:'タイプ診断を完了したら、好きな休憩を入れる', target:4, note:'最初の一歩を軽くするためのご褒美。', achievedDate:'', focus:true };
+  }
+
+  function ensurePresetReward(){
+    const preset = getPresetReward();
+    if(!state.rewards.some(r => r.id === preset.id)){
+      state.rewards.unshift(preset);
+    }
   }
 
   function applyPresetReward(){
-    const preset = getPresetReward();
-    const exists = state.rewards.some(r => r.id === preset.id);
-    if(!exists){
-      state.rewards.splice(Math.min(2, state.rewards.length), 0, preset);
-      saveState();
-      renderRewards();
-    }
+    ensurePresetReward();
+    saveState();
+    paintAll();
   }
 
   function rewardStatus(reward){
@@ -595,11 +636,31 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   }
 
   function rewardMetaText(reward){
-    if(state.taskCount >= reward.target){
-      return reward.achievedDate ? `${reward.achievedDate} に達成` : '受け取りへ →';
+    if(reward.achievedDate) return `${reward.achievedDate} に受け取り記録済み`;
+    if(state.taskCount >= reward.target) return '受け取りOK';
+    return `あと${Math.max(0, reward.target - state.taskCount)}個でアンロック`;
+  }
+
+  function pushHistory(title){
+    if(state.history.some(item => item.title === title && item.date === CURRENT_DATE)) return;
+    state.history.unshift({ title, date: CURRENT_DATE });
+  }
+
+  function receiveReward(id){
+    const reward = state.rewards.find(r => r.id === id);
+    if(!reward || state.taskCount < reward.target) return;
+    if(!reward.achievedDate){
+      reward.achievedDate = CURRENT_DATE;
+      pushHistory(`${reward.title} を受け取り`);
+      saveState();
+      paintAll();
     }
-    const remain = Math.max(0, reward.target - state.taskCount);
-    return `あと${remain}個でアンロック`;
+  }
+
+  function removeReward(id){
+    state.rewards = state.rewards.filter(r => r.id !== id);
+    saveState();
+    paintAll();
   }
 
   function renderRewards(){
@@ -621,6 +682,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
         <div class="reward-copy">${reward.note || ''}</div>
         <div class="reward-bar-track"><div class="reward-bar-fill" style="width:${rate}%"></div></div>
         <div class="reward-foot"><span>${state.taskCount} / ${reward.target}</span><span>${rewardMetaText(reward)}</span></div>
+        <div class="reward-actions">
+          ${status === 'achieved' && !reward.achievedDate ? `<button class="reward-action primary" data-receive="${reward.id}">受け取り済みにする</button>` : ''}
+          ${!reward.focus ? `<button class="reward-action" data-remove="${reward.id}">削除</button>` : ''}
+        </div>
       `;
       grid.appendChild(card);
     });
@@ -630,6 +695,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     addCard.innerHTML = '<div class="new-reward-btn" id="inlineAddReward">＋</div><div class="new-reward-title">新しいご褒美を追加して、<br>続ける理由を増やす</div>';
     grid.appendChild(addCard);
     document.getElementById('inlineAddReward').addEventListener('click', promptAddReward);
+    grid.querySelectorAll('[data-receive]').forEach(btn => btn.addEventListener('click', () => receiveReward(btn.dataset.receive)));
+    grid.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => removeReward(btn.dataset.remove)));
   }
 
   function renderHistory(){
@@ -656,24 +723,20 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   function renderGuide(){
     const list = document.getElementById('guideList');
     const items = [];
-    items.push(`今の次ステップは <b>${next.title}</b>。モチベが落ちる前に、ここだけは先に片づけるのが◎。`);
-
-    if(status.value){
-      items.push(`最重要価値観の <b>「${primaryValue()}」</b> が満たされる行動を1個だけ先に入れると、頑張りが空回りしにくい。`);
+    items.push(`今の次ステップは <b>${next.title}</b>。最初にそこだけ進めると、やる気が散りにくい。`);
+    if(statuses.value){
+      items.push(`最重要価値観の <b>「${primaryValue()}」</b> が満たされる行動を1個だけ入れると、頑張りが空回りしにくい。`);
     } else {
       items.push('まだ価値観が未設定なら、ご褒美を豪華にするより <b>着手ハードルを下げる設計</b> が効きやすい。');
     }
-
-    if(status.vision){
-      items.push(`将来像は <b>${clipText(visionDraft.summary, 40)}</b>。日々のタスクを「その未来につながるか」で見直すと気持ちが戻しやすい。`);
+    if(statuses.vision){
+      items.push(`将来像は <b>${clipText(visionDraft.summary, 38)}</b>。日々のタスクを「その未来につながるか」で見直すと戻りやすい。`);
     } else {
       items.push('ビジョンがまだぼんやりでもOK。1年後だけでも書けると、今やる理由がかなり強くなる。');
     }
-
-    if(status.company){
-      items.push('自己分析の結果は企業比較に使える段階。ご褒美は「応募数」より <b>納得できる比較ができたか</b> に紐づけると質も上がる。');
+    if(statuses.company){
+      items.push('企業比較フェーズでは、ご褒美を <b>応募数だけでなく比較の納得感</b> にも紐づけると質が上がる。');
     }
-
     list.innerHTML = '';
     items.forEach((text, idx) => {
       const row = document.createElement('div');
@@ -683,34 +746,91 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     });
   }
 
+  function renderTodayList(){
+    const list = document.getElementById('todayList');
+    const items = [];
+    items.push({
+      main:`最優先は <b>${next.title}</b> に5〜10分だけ触ること。`,
+      sub:'おすすめ順の次モジュールだけ先に進めると、気持ちがかなり整理されやすい。'
+    });
+    if(statuses.value){
+      items.push({
+        main:`今日の行動を <b>「${primaryValue()}」</b> と結びつけて1つ決める。`,
+        sub:'例：安心感を大事にしたいなら、比較情報を増やす行動を入れる。'
+      });
+    } else {
+      items.push({
+        main:'自己分析は <b>完璧に埋めようとしない</b> で、まず入口を終わらせる。',
+        sub:'最初は「全部」より「次の1つ」を終える方が続きやすい。'
+      });
+    }
+    if(statuses.vision){
+      items.push({
+        main:'今日の予定やタスクを、<b>将来像につながるか</b> で1回だけ見直す。',
+        sub:'意味づけがあるタスクは、やる気が切れにくい。'
+      });
+    } else {
+      items.push({
+        main:'もし余力があれば、<b>1年後だけでも</b> イメージを一文で書く。',
+        sub:'未来像は長文じゃなくてOK。ラフな1文でも十分効く。'
+      });
+    }
+    list.innerHTML = '';
+    items.forEach((item, idx) => {
+      const row = document.createElement('div');
+      row.className = 'today-item';
+      row.innerHTML = `<div class="today-no">${idx+1}</div><div><div class="today-main">${item.main}</div><div class="today-sub">${item.sub}</div></div>`;
+      list.appendChild(row);
+    });
+  }
+
   function promptAddReward(){
     const title = window.prompt('追加したいご褒美の内容を入力してね', 'お気に入りの入浴剤を買う');
     if(!title) return;
-    const targetInput = window.prompt('何タスク達成でアンロックにする？', String(Math.max(30, state.taskCount + 10)));
+    const targetInput = window.prompt('何タスク達成でアンロックにする？', String(Math.max(8, state.taskCount + 5)));
     const target = Number(targetInput);
     if(!target || target < 1) return;
     state.rewards.push({
-      id:'custom-' + Date.now(),
-      title:title.trim(),
-      target:target,
-      note:'自分で追加したご褒美。しんどい時の戻ってくる理由をひとつ増やす用。',
-      achievedDate:''
+      id:'custom-' + Date.now(), title:title.trim(), target:target,
+      note:'自分で追加したご褒美。しんどい時に戻ってくる理由を1つ増やす用。', achievedDate:''
     });
     saveState();
-    renderRewards();
+    paintAll();
+  }
+
+  function updateTask(delta){
+    state.taskCount = Math.max(0, state.taskCount + delta);
+    saveState();
+    paintAll();
+  }
+  function updateStreak(delta){
+    state.streakDays = Math.max(0, state.streakDays + delta);
+    saveState();
+    paintAll();
+  }
+  function resetStreak(){
+    state.streakDays = 0;
+    saveState();
+    paintAll();
   }
 
   function paintOverview(){
     const pct = heroProgressPct();
+    const coach = coachMessage();
+    const phase = phaseInfo();
+
     document.getElementById('taskCount').textContent = state.taskCount;
     document.getElementById('streakCount').textContent = `${state.streakDays}日`;
     document.getElementById('doneModules').textContent = `${doneCount}/4`;
+    document.getElementById('taskCountInline').textContent = state.taskCount;
+    document.getElementById('streakCountInline').textContent = `${state.streakDays}日`;
     document.getElementById('heroChip').textContent = `自己分析 ${doneCount} / 4 完了`;
     document.getElementById('progressText').textContent = `${pct}%`;
     document.getElementById('heroProgressFill').style.width = `${pct}%`;
     document.getElementById('heroNote').textContent = next.note;
+    document.getElementById('phaseChip').textContent = phase.chip;
+    document.getElementById('phaseText').innerHTML = phase.text;
 
-    const coach = coachMessage();
     document.getElementById('coachTitle').textContent = coach.title;
     document.getElementById('coachCopy').textContent = coach.copy;
     document.getElementById('coachCta').textContent = next.label;
@@ -725,22 +845,32 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     });
 
     document.getElementById('summaryType').textContent = dominantTypeLabel();
-    document.getElementById('summaryTypeSub').textContent = typeResult ? `価値観型 ${typeResult.aPct ?? 50}% / ビジョン型 ${typeResult.bPct ?? 50}%` : 'まずは入口の診断からスタート';
+    document.getElementById('summaryTypeSub').textContent = typeResult ? `価値観型 ${typeResult.aPct ?? typeResult.valuePct ?? 50}% / ビジョン型 ${typeResult.bPct ?? typeResult.visionPct ?? 50}%` : 'まずは入口の診断からスタート';
     document.getElementById('summaryPrimary').textContent = primaryValue();
-    document.getElementById('summaryPrimarySub').textContent = valueDraft?.summary ? clipText(valueDraft.summary, 70) : '行動の納得感を支える軸';
-    document.getElementById('summaryVision').textContent = visionDraft?.summary ? clipText(visionDraft.summary, 24) : '未保存';
-    document.getElementById('summaryVisionSub').textContent = visionDraft?.summary ? clipText(visionDraft.summary, 70) : '将来像が言語化されると踏ん張りやすい';
+    document.getElementById('summaryPrimarySub').textContent = valueDraft?.summary ? clipText(valueDraft.summary, 72) : '行動の納得感を支える軸';
+    document.getElementById('summaryVision').textContent = visionDraft?.summary ? clipText(visionDraft.summary, 26) : '未保存';
+    document.getElementById('summaryVisionSub').textContent = visionDraft?.summary ? clipText(visionDraft.summary, 72) : '将来像が言語化されると踏ん張りやすい';
     document.getElementById('summaryNext').textContent = next.title;
     document.getElementById('summaryNextSub').textContent = next.note;
   }
 
+  function paintAll(){
+    paintOverview();
+    renderTodayList();
+    renderRewards();
+    renderHistory();
+    renderGuide();
+  }
+
   document.getElementById('addRewardBtn').addEventListener('click', promptAddReward);
   document.getElementById('applyRewardPreset').addEventListener('click', applyPresetReward);
+  document.getElementById('taskMinusBtn').addEventListener('click', () => updateTask(-1));
+  document.getElementById('taskPlusBtn').addEventListener('click', () => updateTask(1));
+  document.getElementById('streakPlusBtn').addEventListener('click', () => updateStreak(1));
+  document.getElementById('streakResetBtn').addEventListener('click', resetStreak);
 
-  paintOverview();
-  renderRewards();
-  renderHistory();
-  renderGuide();
+  ensurePresetReward();
+  paintAll();
   saveState();
 </script>
 </body>

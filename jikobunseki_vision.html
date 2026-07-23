@@ -256,6 +256,15 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
+
+/* SELF ANALYSIS FINAL POLISH */
+.lead{max-width:72ch;}
+.path-banner,.flow-banner,.lock-banner,.status-banner{box-shadow:0 12px 28px rgba(26,34,56,.06);border:1px solid rgba(63,105,68,.12);}
+.result-panel,.module,.year-card,.card{box-shadow:0 14px 30px rgba(26,34,56,.06);}
+.result-panel p,.module-result,.module-desc,.card-sub{line-height:1.85;}
+.rec-note{margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(244,238,226,.72);color:var(--muted);line-height:1.8;}
+.module-result{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;}
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -278,7 +287,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     <div class="back-row">
       <a class="back-link" href="jikobunseki_katikan.html">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-        価値観発掘に戻る
+        前のおすすめモジュールに戻る
       </a>
       <a class="back-link" href="jikobunseki.html">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
@@ -290,19 +299,19 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     <h1>ビジョン発掘</h1>
     <p class="lead">
       「将来どうなっていたいか」を、いきなり完璧に決めるページじゃないよ。<br>
-      価値観発掘で見えてきたことをヒントにしながら、1年後・3年後・5年後のイメージを少しずつ言葉にしていくページです。
+      おすすめ順が先でも後でも、ここは全員が通る共通モジュール。価値観や未来メモをヒントにしながら、1年後・3年後・5年後のイメージを少しずつ言葉にしていくページです。
     </p>
 
     <div class="flow-banner">
       <span class="flow-chip" id="flowChip">価値観発掘から連携中</span>
       <div class="flow-text" id="flowText">
-        直前の <b>価値観発掘</b> で保存した内容を読み込んでいます。最後に書いた「その先にある未来」を下書きヒントとして使えるようにしてあります。
+        直前の <b>価値観発掘</b> で保存した内容を読み込んでいます。過去データに「その先にある未来」があれば、下書きヒントとして使えるようにしてあります。
       </div>
     </div>
 
     <div class="progress-wrap">
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-label" id="progressLabel">0 / 4 STEP COMPLETED</div>
+      <div class="progress-label" id="progressLabel">0 / 3 STEP COMPLETED</div>
     </div>
 
     <section class="card" data-step="0">
@@ -311,7 +320,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <div class="step-num">LINK</div>
           <div class="card-title">価値観発掘から引き継いだメモ</div>
           <div class="card-sub">
-            ここは連携確認用。最重要価値観や、前ページで書いた未来メモを見返しながら進められるようにしてあります。
+            ここは連携確認用。元データがあるときだけ表示され、最重要価値観や以前の未来メモを見返しながら進められます。
           </div>
         </div>
       </div>
@@ -323,12 +332,12 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
             <div class="mini-body" id="linkedPrimary">未連携</div>
           </div>
           <div class="mini-box">
-            <div class="mini-label">この3ヶ月でやること</div>
+            <div class="mini-label">過去の未来メモ</div>
             <div class="mini-body soft" id="linkedAction">まだ読み込まれていません</div>
           </div>
         </div>
         <div class="mini-box">
-          <div class="mini-label">価値観発掘で描いた未来メモ（編集OK）</div>
+          <div class="mini-label">下書きヒント（編集OK）</div>
           <textarea id="seedMemo" placeholder="前のページからの未来メモがここに入ります。未入力なら、自分で書き始めてもOKです。"></textarea>
         </div>
         <div class="mini-box">
@@ -465,11 +474,17 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   const SEED_KEY = 'shiori_vision_seed';
   const COMPANY_SEED_KEY = 'shiori_company_values_seed';
 
+  function readJson(key){
+    try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
+  }
+
   const valueDraft = readJson(VALUE_KEY) || {};
   const visionDraft = readJson(VISION_KEY) || {};
+  const hasLinkedData = !!(valueDraft.primaryValue || valueDraft.summary || valueDraft.legacyFutureMemo || valueDraft.q3 || localStorage.getItem(SEED_KEY));
+  const hasValueSummary = !!valueDraft.summary;
 
   const state = {
-    seedMemo: visionDraft.seedMemo || valueDraft.q3 || localStorage.getItem(SEED_KEY) || '',
+    seedMemo: visionDraft.seedMemo || valueDraft.legacyFutureMemo || valueDraft.q3 || localStorage.getItem(SEED_KEY) || '',
     oneYear: visionDraft.oneYear || '',
     threeYear: visionDraft.threeYear || '',
     fiveYear: visionDraft.fiveYear || '',
@@ -479,7 +494,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     actionPlan: visionDraft.actionPlan || '',
     meaning: visionDraft.meaning || '',
     linkedPrimary: valueDraft.primaryValue || '',
-    linkedAction: valueDraft.q2 || '',
+    linkedLegacyFuture: valueDraft.legacyFutureMemo || valueDraft.q3 || '',
     linkedSummary: valueDraft.summary || valueDraft.q1 || ''
   };
 
@@ -487,20 +502,26 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   const progressLabel = document.getElementById('progressLabel');
   const submitBtn = document.getElementById('submitBtn');
 
-  function readJson(key){
-    try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
-  }
-
   function renderLinkedData(){
+    const flowBanner = document.querySelector('.flow-banner');
+    const linkCard = document.querySelector('[data-step="0"]');
+    const prevLink = document.querySelector('.back-row .back-link');
+
+    if(prevLink){
+      prevLink.href = hasValueSummary ? 'jikobunseki_katikan.html' : 'jikobunseki_type.html';
+      prevLink.innerHTML = `<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>${hasValueSummary ? '価値観発掘に戻る' : 'タイプ診断に戻る'}`;
+    }
+
+    if(!hasLinkedData){
+      if(flowBanner) flowBanner.style.display = 'none';
+      if(linkCard) linkCard.style.display = 'none';
+      return;
+    }
+
     document.getElementById('linkedPrimary').textContent = state.linkedPrimary || '未設定';
-    document.getElementById('linkedAction').textContent = state.linkedAction || 'まだ保存されていません';
+    document.getElementById('linkedAction').textContent = state.linkedLegacyFuture || 'まだ保存されていません';
     document.getElementById('linkedSummary').textContent = state.linkedSummary || 'まだ保存されていません';
     document.getElementById('seedMemo').value = state.seedMemo;
-
-    if(!state.linkedPrimary && !state.seedMemo){
-      document.getElementById('flowChip').textContent = '単独で入力中';
-      document.getElementById('flowText').innerHTML = '前のページの保存内容が見つからなかったので、このページ単体でも入力できるようにしています。あとから価値観発掘とつなげることもOKです。';
-    }
   }
 
   function syncInputs(){
@@ -512,6 +533,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     updateUnknownUI('oneYear', state.oneYearUnknown);
     updateUnknownUI('threeYear', state.threeYearUnknown);
     updateUnknownUI('fiveYear', state.fiveYearUnknown);
+    const seedMemo = document.getElementById('seedMemo');
+    if(seedMemo) seedMemo.value = state.seedMemo;
   }
 
   function updateUnknownUI(key, isUnknown){
@@ -536,7 +559,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   }
 
   function applySeedToField(key){
-    const seed = document.getElementById('seedMemo').value.trim();
+    const seed = (document.getElementById('seedMemo')?.value || '').trim();
     if(!seed) return;
     state[key] = seed;
     state[`${key}Unknown`] = false;
@@ -545,7 +568,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   }
 
   function applySeedAll(){
-    const seed = document.getElementById('seedMemo').value.trim();
+    const seed = (document.getElementById('seedMemo')?.value || '').trim();
     if(!seed) return;
     ['oneYear','threeYear','fiveYear'].forEach(key => {
       if(!state[key].trim()) state[key] = seed;
@@ -563,43 +586,24 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   }
 
   function isStepDone(step){
-    if(step === 1) return state.seedMemo.trim().length > 0 || !!state.linkedPrimary || !!state.linkedSummary;
-    if(step === 2) return isVisionStepDone();
-    if(step === 3) return state.actionPlan.trim().length > 0;
-    if(step === 4) return state.meaning.trim().length > 0;
+    if(step === 1) return isVisionStepDone();
+    if(step === 2) return state.actionPlan.trim().length > 0;
+    if(step === 3) return state.meaning.trim().length > 0;
     return false;
   }
 
   function updateProgress(){
-    const steps = [1,2,3,4].filter(isStepDone).length;
-    progressFill.style.width = (steps / 4 * 100) + '%';
-    progressLabel.textContent = `${steps} / 4 STEP COMPLETED`;
-    submitBtn.classList.toggle('disabled', steps !== 4);
-  }
-
-  function getYearText(text, unknown){
-    return unknown ? '思いつかない（保留中）' : (text.trim() || '—');
-  }
-
-  function buildVisionLine(){
-    return `1年後は${getYearText(state.oneYear, state.oneYearUnknown)}。3年後は${getYearText(state.threeYear, state.threeYearUnknown)}。5年後は${getYearText(state.fiveYear, state.fiveYearUnknown)}。`;
+    const steps = [1,2,3].filter(isStepDone).length;
+    progressFill.style.width = (steps / 3 * 100) + '%';
+    progressLabel.textContent = `${steps} / 3 STEP COMPLETED`;
+    submitBtn.classList.toggle('disabled', steps !== 3);
   }
 
   function buildSummary(){
-    const primary = state.linkedPrimary ? `そしてその根底には「${state.linkedPrimary}」という価値観がある。` : '';
-    return `私は${buildVisionLine()}そのために${state.actionPlan}。これは私にとって${state.meaning}という意味を持つ。${primary}`.replace(/\s+/g, ' ').trim();
-  }
-
-  function renderResult(){
-    document.getElementById('summaryText').textContent = buildSummary();
-    document.getElementById('resultOneYear').textContent = getYearText(state.oneYear, state.oneYearUnknown);
-    document.getElementById('resultThreeYear').textContent = getYearText(state.threeYear, state.threeYearUnknown);
-    document.getElementById('resultFiveYear').textContent = getYearText(state.fiveYear, state.fiveYearUnknown);
-    document.getElementById('resultAction').textContent = state.actionPlan || '—';
-    document.getElementById('resultMeaning').textContent = state.meaning || '—';
-    const panel = document.getElementById('resultPanel');
-    panel.style.display = 'block';
-    panel.scrollIntoView({behavior:'smooth', block:'start'});
+    const one = state.oneYearUnknown ? '1年後はまだ未定' : `1年後は${state.oneYear}`;
+    const three = state.threeYearUnknown ? '3年後はまだ未定' : `3年後は${state.threeYear}`;
+    const five = state.fiveYearUnknown ? '5年後はまだ未定' : `5年後は${state.fiveYear}`;
+    return `${one}。${three}。${five}。そのために、まずは${state.actionPlan}に取り組みたい。これは${state.meaning}につながる。`;
   }
 
   function persist(){
@@ -613,29 +617,37 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       fiveYearUnknown: state.fiveYearUnknown,
       actionPlan: state.actionPlan,
       meaning: state.meaning,
-      linkedPrimary: state.linkedPrimary,
-      linkedSummary: state.linkedSummary,
       summary: buildSummary(),
       updatedAt: new Date().toISOString()
     };
     localStorage.setItem(VISION_KEY, JSON.stringify(payload));
     localStorage.setItem(COMPANY_SEED_KEY, JSON.stringify({
-      visionSummary: buildSummary(),
-      linkedPrimary: state.linkedPrimary,
+      summary: payload.summary,
       meaning: state.meaning,
-      updatedAt: new Date().toISOString()
+      actionPlan: state.actionPlan,
+      updatedAt: payload.updatedAt
     }));
   }
 
-  document.getElementById('seedMemo').addEventListener('input', e => {
-    state.seedMemo = e.target.value;
-    updateProgress();
-  });
-  document.getElementById('oneYear').addEventListener('input', e => { state.oneYear = e.target.value; updateProgress(); });
-  document.getElementById('threeYear').addEventListener('input', e => { state.threeYear = e.target.value; updateProgress(); });
-  document.getElementById('fiveYear').addEventListener('input', e => { state.fiveYear = e.target.value; updateProgress(); });
-  document.getElementById('actionPlan').addEventListener('input', e => { state.actionPlan = e.target.value; updateProgress(); });
-  document.getElementById('meaning').addEventListener('input', e => { state.meaning = e.target.value; updateProgress(); });
+  function renderResult(){
+    document.getElementById('summaryText').textContent = buildSummary();
+    document.getElementById('resultOneYear').textContent = state.oneYearUnknown ? 'いまは未定' : (state.oneYear || '—');
+    document.getElementById('resultThreeYear').textContent = state.threeYearUnknown ? 'いまは未定' : (state.threeYear || '—');
+    document.getElementById('resultFiveYear').textContent = state.fiveYearUnknown ? 'いまは未定' : (state.fiveYear || '—');
+    document.getElementById('resultAction').textContent = state.actionPlan || '—';
+    document.getElementById('resultMeaning').textContent = state.meaning || '—';
+    const panel = document.getElementById('resultPanel');
+    panel.style.display = 'block';
+    panel.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function getNextHref(){
+    return hasValueSummary ? 'jikobunseki_company_values.html' : 'jikobunseki_katikan.html';
+  }
+
+  function getNextLabel(){
+    return hasValueSummary ? '企業選びの価値観発掘' : '価値観発掘';
+  }
 
   document.querySelectorAll('[data-unknown]').forEach(btn => {
     btn.addEventListener('click', () => toggleUnknown(btn.dataset.unknown));
@@ -645,30 +657,38 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   });
   document.getElementById('applySeedAllBtn').addEventListener('click', applySeedAll);
 
+  ['oneYear','threeYear','fiveYear','actionPlan','meaning'].forEach(id => {
+    document.getElementById(id).addEventListener('input', e => {
+      state[id] = e.target.value;
+      updateProgress();
+    });
+  });
+
+  const seedMemo = document.getElementById('seedMemo');
+  if(seedMemo){
+    seedMemo.addEventListener('input', e => {
+      state.seedMemo = e.target.value;
+    });
+  }
+
   document.getElementById('saveDraftBtn').addEventListener('click', () => {
-    state.seedMemo = document.getElementById('seedMemo').value;
-    if(!state.oneYearUnknown) state.oneYear = document.getElementById('oneYear').value;
-    if(!state.threeYearUnknown) state.threeYear = document.getElementById('threeYear').value;
-    if(!state.fiveYearUnknown) state.fiveYear = document.getElementById('fiveYear').value;
     state.actionPlan = document.getElementById('actionPlan').value;
     state.meaning = document.getElementById('meaning').value;
+    state.seedMemo = document.getElementById('seedMemo')?.value || state.seedMemo;
     persist();
     alert('下書きを保存しました');
   });
 
   document.getElementById('submitBtn').addEventListener('click', () => {
     if(submitBtn.classList.contains('disabled')) return;
-    state.seedMemo = document.getElementById('seedMemo').value;
-    if(!state.oneYearUnknown) state.oneYear = document.getElementById('oneYear').value;
-    if(!state.threeYearUnknown) state.threeYear = document.getElementById('threeYear').value;
-    if(!state.fiveYearUnknown) state.fiveYear = document.getElementById('fiveYear').value;
     state.actionPlan = document.getElementById('actionPlan').value;
     state.meaning = document.getElementById('meaning').value;
+    state.seedMemo = document.getElementById('seedMemo')?.value || state.seedMemo;
     persist();
     renderResult();
     setTimeout(() => {
-      const go = confirm('結果を保存しました。次の「企業選びの価値観発掘」ページへ進みますか？');
-      if(go) window.location.href = 'jikobunseki_company_values.html';
+      const go = confirm(`結果を保存しました。次の「${getNextLabel()}」ページへ進みますか？`);
+      if(go) window.location.href = getNextHref();
     }, 260);
   });
 

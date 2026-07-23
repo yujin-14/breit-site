@@ -358,6 +358,15 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
+
+/* SELF ANALYSIS FINAL POLISH */
+.lead{max-width:72ch;}
+.path-banner,.flow-banner,.lock-banner,.status-banner{box-shadow:0 12px 28px rgba(26,34,56,.06);border:1px solid rgba(63,105,68,.12);}
+.result-panel,.module,.year-card,.card{box-shadow:0 14px 30px rgba(26,34,56,.06);}
+.result-panel p,.module-result,.module-desc,.card-sub{line-height:1.85;}
+.rec-note{margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(244,238,226,.72);color:var(--muted);line-height:1.8;}
+.module-result{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;}
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -385,21 +394,21 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     <div class="eyebrow mono">SELF ANALYSIS / H2-2</div>
     <h1>価値観発掘</h1>
     <p class="lead">
-      「何を大切にしたいか」を言葉にしていくページです。<br>
+      「何を大切にしたいか」を言葉にしていくページです。おすすめ順があとでも、ここは全員が通る共通モジュール。<br>
       なんとなく大事だと思っていることを、カード選択と記述で少しずつ輪郭にしていきます。
     </p>
 
     <div class="path-banner">
       <span class="path-chip">タイプ診断の次</span>
       <div class="path-text">
-        あなたは <b>価値観型寄り</b> の想定なので、このページから先に進む流れです。
-        最後に書いた「その先の未来」は、次の <b>ビジョン発掘</b> の初期入力にもつなげられます。
+        ここで整理した価値観は、次の <b>ビジョン発掘</b> で将来像を言葉にするときの土台になります。
+        ビジョン型の人でも、このページはあとから必ず通る共通モジュールです。
       </div>
     </div>
 
     <div class="progress-wrap">
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-label" id="progressLabel">0 / 6 STEP COMPLETED</div>
+      <div class="progress-label" id="progressLabel">0 / 3 STEP COMPLETED</div>
     </div>
 
     <section class="card" data-step="1">
@@ -420,9 +429,9 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       <div class="card-head">
         <div>
           <div class="step-num">STEP 2</div>
-          <div class="card-title">価値観カードを選ぶ</div>
+          <div class="card-title">自分の人生で大切にしたいものを選ぶ</div>
           <div class="card-sub">
-            下の言葉から「しっくりくるもの」を複数選んでね。選んだ中から、<b>いちばん大事なものを1つ</b>選ぶと濃い緑になります。
+            下の言葉から「自分の人生で大切にしたいもの」を<b>最大5つまで</b>選んでね。選んだ中から、<b>いちばん大事なものを1つ</b>選ぶと濃い緑になります。
           </div>
         </div>
       </div>
@@ -433,14 +442,14 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <input type="text" id="searchInput" placeholder="価値観ワードを検索">
         </div>
         <div class="count-note">
-          選択中 <span class="mono" id="selectedCount">0</span> 件 / 最重要 <span class="mono" id="primaryValueLabel">未選択</span>
+          選択中 <span class="mono" id="selectedCount">0</span> / 5 件 / 最重要 <span class="mono" id="primaryValueLabel">未選択</span>
         </div>
       </div>
 
       <div class="value-grid" id="valueGrid"></div>
 
       <div class="picked-wrap" id="pickedWrap"></div>
-      <div class="helper">※ まずは複数選択 → そのあと「最重要」にしたいカードをもう一度押す仕様です。</div>
+      <div class="helper">※ まずは最大5つまで選択 → そのあと「最重要」にしたいカードをもう一度押す仕様です。</div>
     </section>
 
     <section class="card" data-step="3">
@@ -458,53 +467,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       </div>
     </section>
 
-    <section class="card" data-step="4">
-      <div class="card-head">
-        <div>
-          <div class="step-num">STEP 4</div>
-          <div class="card-title">その価値観が満たされる環境を具体化する</div>
-          <div class="card-sub">
-            「大事にしたいこと」が、どんな環境なら守られやすいかを選んでいこう。
-          </div>
-        </div>
-      </div>
-
-      <div class="section-label">当てはまるものを複数選択</div>
-      <div class="env-grid" id="envGrid"></div>
-
-      <div class="env-note">
-        <input type="text" id="envFree" placeholder="そのほかに大事な環境条件があれば自由に追加">
-      </div>
-    </section>
-
-    <div class="mini-grid">
-      <section class="card" data-step="5">
-        <div class="card-head">
-          <div>
-            <div class="step-num">STEP 5</div>
-            <div class="card-title">この3ヶ月でやること</div>
-            <div class="card-sub">価値観が満たされるために、今月・今日から何をするとよさそう？</div>
-          </div>
-        </div>
-        <textarea id="q2" placeholder="例）OB訪問で『裁量があるか』を聞く。興味のある企業の社風を3社比較する。"></textarea>
-      </section>
-
-      <section class="card" data-step="6">
-        <div class="card-head">
-          <div>
-            <div class="step-num">STEP 6</div>
-            <div class="card-title">その先にある未来</div>
-            <div class="card-sub">価値観が満たされた先に、どんな働き方・生き方がありそう？</div>
-          </div>
-        </div>
-        <textarea id="q3" placeholder="例）自分らしく働けて、納得感を持ってキャリアを選べる。周りと比べすぎずに前向きでいられる。"></textarea>
-      </section>
-    </div>
-
     <section class="result-panel" id="resultPanel">
       <h2 class="result-title">価値観発掘のまとめ</h2>
       <p class="result-lead">
-        選んだ価値観・理由・満たされる環境を1回整理して見える化したよ。次のビジョン発掘にそのままつなげられる状態です。
+        選んだ価値観と理由を1回整理して見える化したよ。次のビジョン発掘で、この内容を将来像の言語化につなげられる状態です。
       </p>
 
       <div class="summary-box">
@@ -518,7 +484,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
               <th>選んだ価値観</th>
               <th>理由</th>
               <th>最重要</th>
-              <th>満たされる環境</th>
+              
             </tr>
           </thead>
           <tbody id="resultTableBody"></tbody>
@@ -547,38 +513,25 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     "分かち合い","ワクワク感"
   ];
 
-  const ENV_OPTIONS = [
-    "裁量がある",
-    "細かく管理されない",
-    "意見を言える",
-    "挑戦を応援してもらえる",
-    "人間関係が穏やか",
-    "フィードバックがある",
-    "成長機会が多い",
-    "成果だけでなく過程も見てもらえる",
-    "納得感を持って働ける",
-    "チームで協力できる",
-    "自分らしさを出せる",
-    "社会への貢献を感じられる"
-  ];
-
   const STORAGE_KEY = "shiori_katikan_draft";
+  const VISION_KEY = "shiori_vision_draft";
+  const LEGACY_SEED_KEY = "shiori_vision_seed";
+  const MAX_VALUES = 5;
 
   const state = {
     selectedValues: [],
     primaryValue: null,
     reasons: {},
-    environments: [],
-    q1: "",
-    q2: "",
-    q3: "",
-    envFree: ""
+    q1: ""
   };
+
+  function readJson(key){
+    try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
+  }
 
   const valueGrid = document.getElementById("valueGrid");
   const pickedWrap = document.getElementById("pickedWrap");
   const reasonList = document.getElementById("reasonList");
-  const envGrid = document.getElementById("envGrid");
   const selectedCount = document.getElementById("selectedCount");
   const primaryValueLabel = document.getElementById("primaryValueLabel");
   const progressFill = document.getElementById("progressFill");
@@ -608,6 +561,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     const isSelected = state.selectedValues.includes(word);
 
     if (!isSelected) {
+      if (state.selectedValues.length >= MAX_VALUES) {
+        alert("価値観カードは最大5つまで選べるよ。");
+        return;
+      }
       state.selectedValues.push(word);
       if (!state.primaryValue) state.primaryValue = word;
       state.reasons[word] = state.reasons[word] || "";
@@ -693,54 +650,32 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     });
   }
 
-  function renderEnvOptions() {
-    envGrid.innerHTML = "";
-    ENV_OPTIONS.forEach(label => {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.className = "env-chip" + (state.environments.includes(label) ? " sel" : "");
-      chip.textContent = label;
-      chip.addEventListener("click", () => {
-        if (state.environments.includes(label)) {
-          state.environments = state.environments.filter(v => v !== label);
-        } else {
-          state.environments.push(label);
-        }
-        renderEnvOptions();
-        updateProgress();
-      });
-      envGrid.appendChild(chip);
-    });
-  }
-
   function syncInputs() {
     document.getElementById("q1").value = state.q1;
-    document.getElementById("q2").value = state.q2;
-    document.getElementById("q3").value = state.q3;
-    document.getElementById("envFree").value = state.envFree;
   }
 
   function isStepDone(step) {
     if (step === 1) return state.q1.trim().length > 0;
-    if (step === 2) return state.selectedValues.length > 0 && !!state.primaryValue;
+    if (step === 2) return state.selectedValues.length > 0 && state.selectedValues.length <= MAX_VALUES && !!state.primaryValue;
     if (step === 3) return state.selectedValues.length > 0 && state.selectedValues.every(v => (state.reasons[v] || "").trim().length > 0);
-    if (step === 4) return state.environments.length > 0 || state.envFree.trim().length > 0;
-    if (step === 5) return state.q2.trim().length > 0;
-    if (step === 6) return state.q3.trim().length > 0;
     return false;
   }
 
   function updateProgress() {
-    const done = [1,2,3,4,5,6].filter(isStepDone).length;
-    progressFill.style.width = (done / 6 * 100) + "%";
-    progressLabel.textContent = `${done} / 6 STEP COMPLETED`;
-
-    const allDone = done === 6;
-    submitBtn.classList.toggle("disabled", !allDone);
+    const done = [1,2,3].filter(isStepDone).length;
+    progressFill.style.width = (done / 3 * 100) + "%";
+    progressLabel.textContent = `${done} / 3 STEP COMPLETED`;
+    submitBtn.classList.toggle("disabled", done !== 3);
   }
 
   function saveDraft() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      selectedValues: state.selectedValues,
+      primaryValue: state.primaryValue,
+      reasons: state.reasons,
+      q1: state.q1,
+      updatedAt: new Date().toISOString()
+    }));
   }
 
   function loadDraft() {
@@ -748,24 +683,23 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     if (!raw) return;
     try {
       const saved = JSON.parse(raw);
-      Object.assign(state, saved);
+      state.selectedValues = Array.isArray(saved.selectedValues) ? saved.selectedValues.slice(0, MAX_VALUES) : [];
+      state.primaryValue = state.selectedValues.includes(saved.primaryValue) ? saved.primaryValue : (state.selectedValues[0] || null);
+      state.reasons = saved.reasons || {};
+      state.q1 = saved.q1 || "";
     } catch (e) {}
   }
 
   function buildSummary() {
     const primaryReason = state.reasons[state.primaryValue] || "";
-    const envs = [...state.environments];
-    if (state.envFree.trim()) envs.push(state.envFree.trim());
-    const envText = envs.join("、") || "自分らしく働ける環境";
-    return `私は「${state.primaryValue}」を大切にしている。なぜなら${primaryReason}から。そのため仕事を選ぶ際には${envText}を重視したい。この価値観を満たすため、まずは${state.q2}に取り組みたい。その先には${state.q3}のような未来があると思う。`;
+    const secondary = state.selectedValues.filter(v => v !== state.primaryValue);
+    const secondaryText = secondary.length ? `ほかにも「${secondary.join("、")}」を大切にしたい。` : '';
+    return `私は人生の中で「${state.primaryValue}」を特に大切にしたい。なぜなら${primaryReason}から。${secondaryText}`.trim();
   }
 
   function renderResult() {
     const panel = document.getElementById("resultPanel");
     const tbody = document.getElementById("resultTableBody");
-    const envs = [...state.environments];
-    if (state.envFree.trim()) envs.push(state.envFree.trim());
-    const envText = envs.join("、");
 
     document.getElementById("summaryText").textContent = buildSummary();
 
@@ -774,9 +708,9 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${word}</td>
-        <td>${(state.reasons[word] || "").replaceAll("\n","<br>")}</td>
+        <td>${(state.reasons[word] || "").replaceAll("
+","<br>")}</td>
         <td>${state.primaryValue === word ? "◎" : "—"}</td>
-        <td>${envText || "—"}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -786,45 +720,51 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   }
 
   function persistForNextPage() {
+    const previous = readJson(STORAGE_KEY) || {};
     const payload = {
-      ...state,
+      selectedValues: state.selectedValues,
+      primaryValue: state.primaryValue,
+      reasons: state.reasons,
+      q1: state.q1,
+      legacyFutureMemo: previous.q3 || previous.legacyFutureMemo || '',
       summary: buildSummary(),
       updatedAt: new Date().toISOString()
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    localStorage.setItem("shiori_vision_seed", state.q3);
+    if (payload.legacyFutureMemo) {
+      localStorage.setItem(LEGACY_SEED_KEY, payload.legacyFutureMemo);
+    }
+  }
+
+  function getNextHref(){
+    const visionDraft = readJson(VISION_KEY) || {};
+    return visionDraft.summary ? "jikobunseki_company_values.html" : "jikobunseki_vision.html";
+  }
+
+  function getNextLabel(){
+    const visionDraft = readJson(VISION_KEY) || {};
+    return visionDraft.summary ? "企業選びの価値観発掘" : "ビジョン発掘";
   }
 
   document.getElementById("searchInput").addEventListener("input", e => renderValueCards(e.target.value));
-
   document.getElementById("q1").addEventListener("input", e => { state.q1 = e.target.value; updateProgress(); });
-  document.getElementById("q2").addEventListener("input", e => { state.q2 = e.target.value; updateProgress(); });
-  document.getElementById("q3").addEventListener("input", e => { state.q3 = e.target.value; updateProgress(); });
-  document.getElementById("envFree").addEventListener("input", e => { state.envFree = e.target.value; updateProgress(); });
 
   document.getElementById("saveDraftBtn").addEventListener("click", () => {
     state.q1 = document.getElementById("q1").value;
-    state.q2 = document.getElementById("q2").value;
-    state.q3 = document.getElementById("q3").value;
-    state.envFree = document.getElementById("envFree").value;
     saveDraft();
     alert("下書きを保存しました");
   });
 
   document.getElementById("submitBtn").addEventListener("click", () => {
     if (submitBtn.classList.contains("disabled")) return;
-
     state.q1 = document.getElementById("q1").value;
-    state.q2 = document.getElementById("q2").value;
-    state.q3 = document.getElementById("q3").value;
-    state.envFree = document.getElementById("envFree").value;
-
     persistForNextPage();
     renderResult();
 
     setTimeout(() => {
-      const go = confirm("結果を保存しました。次の『ビジョン発掘』ページへ進みますか？");
-      if (go) window.location.href = "jikobunseki_vision.html";
+      const nextLabel = getNextLabel();
+      const go = confirm(`結果を保存しました。次の『${nextLabel}』ページへ進みますか？`);
+      if (go) window.location.href = getNextHref();
     }, 250);
   });
 
@@ -832,7 +772,6 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   renderValueCards();
   renderPicked();
   renderReasons();
-  renderEnvOptions();
   syncInputs();
   updateProgress();
 </script>

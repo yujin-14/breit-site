@@ -205,6 +205,15 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
 
 .nav-logo{text-decoration:none;color:inherit;}
+
+/* SELF ANALYSIS FINAL POLISH */
+.lead{max-width:72ch;}
+.path-banner,.flow-banner,.lock-banner,.status-banner{box-shadow:0 12px 28px rgba(26,34,56,.06);border:1px solid rgba(63,105,68,.12);}
+.result-panel,.module,.year-card,.card{box-shadow:0 14px 30px rgba(26,34,56,.06);}
+.result-panel p,.module-result,.module-desc,.card-sub{line-height:1.85;}
+.rec-note{margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(244,238,226,.72);color:var(--muted);line-height:1.8;}
+.module-result{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;}
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -342,7 +351,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           </div>
           <div class="module-desc">「働く上で」大切にしたい価値観を整理し、人生の価値観との共通点・相違点を比較します。</div>
           <div class="module-result" id="resultCompany">価値観発掘が保存されると、比較導線が強くなります。</div>
-          <div class="lock-note" id="lockNoteCompany"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>比較機能を使うには、先に「価値観発掘」の受診が必要です</span></div>
+          <div class="lock-note" id="lockNoteCompany"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>比較機能を使うには、先に「価値観発掘」と「ビジョン発掘」の両方が必要です</span></div>
         </div>
       </a>
     </div>
@@ -354,7 +363,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; }
   }
 
-  const typeDraft = readJson('shiori_type_result') || readJson('shiori_type_draft') || null;
+  const typeDraft = readJson('shiori_type_result') || null;
   const valueDraft = readJson('shiori_katikan_draft') || null;
   const visionDraft = readJson('shiori_vision_draft') || null;
   const companyDraft = readJson('shiori_company_values_draft') || null;
@@ -365,6 +374,11 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     vision: !!(visionDraft && visionDraft.summary),
     company: !!(companyDraft && companyDraft.summary)
   };
+
+  const typeDominant = typeDraft?.dominant === 'B' || typeDraft?.result === 'vision' ? 'vision' : 'value';
+  const recommendedOrder = typeDominant === 'vision'
+    ? { type: 1, vision: 2, value: 3, company: 4 }
+    : { type: 1, value: 2, vision: 3, company: 4 };
 
   const doneCount = Object.values(statuses).filter(Boolean).length;
   const percent = Math.round(doneCount / 4 * 100);
@@ -392,100 +406,111 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     el.textContent = label;
   }
 
+  function badgeLabel(moduleKey, done, partial){
+    if(done) return {mode:'done', label:'✓'};
+    if(partial) return {mode:'partial', label:'…'};
+    return {mode:'', label:String(recommendedOrder[moduleKey])};
+  }
+
+  const valuePartial = !!valueDraft && !statuses.value;
+  const visionPartial = !!visionDraft && !statuses.vision;
+  const companyPartial = !!companyDraft && !statuses.company;
+
+  setStatus('statusType', statuses.type ? 'done' : 'todo');
+  const typeBadge = badgeLabel('type', statuses.type, false); setBadge('badgeType', typeBadge.mode, typeBadge.label);
   if(statuses.type){
-    setStatus('statusType','done');
-    setBadge('badgeType','done','✓');
-    const dominant = typeDraft.dominant === 'B' || typeDraft.result === 'vision' ? 'ビジョン型寄り' : '価値観型寄り';
+    const dominant = typeDominant === 'vision' ? 'ビジョン型寄り' : '価値観型寄り';
     const aPct = typeDraft.aPct ?? typeDraft.valuePct ?? 50;
     const bPct = typeDraft.bPct ?? typeDraft.visionPct ?? 50;
     document.getElementById('resultType').innerHTML = `${dominant}（価値観型 ${aPct}% ／ ビジョン型 ${bPct}%）<div class="score-bar-mini"><div style="width:${aPct}%;background:var(--teal);"></div><div style="width:${bPct}%;background:var(--amber);"></div></div>`;
-  } else {
-    setStatus('statusType','todo');
-    setBadge('badgeType','','1');
   }
 
-  if(valueDraft){
-    const complete = !!valueDraft.summary;
-    setStatus('statusValue', complete ? 'done' : 'partial');
-    setBadge('badgeValue', complete ? 'done' : 'partial', complete ? '✓' : '…');
-    document.getElementById('resultValue').textContent = valueDraft.summary || '下書き保存あり。まだ最終まとめ前です。';
-  } else {
-    setStatus('statusValue','todo');
-    setBadge('badgeValue','','2');
-  }
+  setStatus('statusValue', statuses.value ? 'done' : (valuePartial ? 'partial' : 'todo'));
+  const valueBadge = badgeLabel('value', statuses.value, valuePartial); setBadge('badgeValue', valueBadge.mode, valueBadge.label);
+  document.getElementById('resultValue').textContent = valueDraft?.summary || (valuePartial ? '下書き保存あり。まだ最終まとめ前です。' : 'まだ保存されていません。');
 
-  if(visionDraft){
-    const complete = !!visionDraft.summary;
-    setStatus('statusVision', complete ? 'done' : 'partial');
-    setBadge('badgeVision', complete ? 'done' : 'partial', complete ? '✓' : '…');
-    document.getElementById('resultVision').textContent = visionDraft.summary || '下書き保存あり。まだ最終まとめ前です。';
-  } else {
-    setStatus('statusVision','todo');
-    setBadge('badgeVision','','3');
-  }
+  setStatus('statusVision', statuses.vision ? 'done' : (visionPartial ? 'partial' : 'todo'));
+  const visionBadge = badgeLabel('vision', statuses.vision, visionPartial); setBadge('badgeVision', visionBadge.mode, visionBadge.label);
+  document.getElementById('resultVision').textContent = visionDraft?.summary || (visionPartial ? '下書き保存あり。まだ最終まとめ前です。' : 'まだ保存されていません。');
 
   if(companyDraft){
-    const complete = !!companyDraft.summary;
-    setStatus('statusCompany', complete ? 'done' : 'partial');
-    setBadge('badgeCompany', complete ? 'done' : 'partial', complete ? '✓' : '…');
+    setStatus('statusCompany', statuses.company ? 'done' : 'partial');
+    const companyBadge = badgeLabel('company', statuses.company, companyPartial); setBadge('badgeCompany', companyBadge.mode, companyBadge.label);
     document.getElementById('moduleCompany').classList.remove('locked');
     document.getElementById('resultCompany').textContent = companyDraft.summary || '下書き保存あり。まだ最終まとめ前です。';
     document.getElementById('lockNoteCompany').style.display = 'none';
-  } else if(valueDraft && valueDraft.summary) {
+  } else if(statuses.value && statuses.vision) {
     setStatus('statusCompany','todo');
-    setBadge('badgeCompany','','4');
+    const companyBadge = badgeLabel('company', false, false); setBadge('badgeCompany', companyBadge.mode, companyBadge.label);
     document.getElementById('moduleCompany').classList.remove('locked');
-    document.getElementById('resultCompany').textContent = '価値観発掘の結果を使って、仕事選びの軸を比較できる状態です。';
-    document.getElementById('lockNoteCompany').innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg><span>価値観発掘の保存データあり。比較ステップに進めます</span>';
+    document.getElementById('resultCompany').textContent = '価値観発掘とビジョン発掘の結果を使って、仕事選びの軸を比較できる状態です。';
+    document.getElementById('lockNoteCompany').innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg><span>価値観発掘とビジョン発掘の保存データあり。比較ステップに進めます</span>';
   } else {
     setStatus('statusCompany','lock');
-    setBadge('badgeCompany','','4');
+    const companyBadge = badgeLabel('company', false, false); setBadge('badgeCompany', companyBadge.mode, companyBadge.label);
   }
 
-  const typeDominant = typeDraft?.dominant === 'B' || typeDraft?.result === 'vision' ? 'vision' : 'value';
-  if(typeDominant === 'value'){
-    document.getElementById('descValue').textContent = '人生において大切にしたい価値観を、コアバリューカードから見つけていくパートです。今の診断傾向だと、こちらを先に進めるのがおすすめ。';
-    document.getElementById('recValue').textContent = 'あなたの流れでは、ここが次のメイン導線になりやすいです。';
-  } else if(typeDraft){
-    document.getElementById('descVision').textContent = '1年後・3年後・5年後の将来像を言語化して、「どんな状態を目指したいか」を整理するパートです。今の診断傾向だと、こちらを先に進めるのがおすすめ。';
-    document.getElementById('recVision').textContent = 'あなたの流れでは、ここが次のメイン導線になりやすいです。';
+  document.getElementById('descValue').textContent = '人生において大切にしたい価値観を、コアバリューカードから見つけていくパートです。';
+  document.getElementById('descVision').textContent = '1年後・3年後・5年後の将来像を言語化して、「どんな状態を目指したいか」を整理するパートです。';
+  document.getElementById('recValue').textContent = '';
+  document.getElementById('recVision').textContent = '';
+
+  if(typeDraft){
+    if(typeDominant === 'value'){
+      document.getElementById('descValue').textContent += ' 今の診断傾向だと、こちらを先に進めるのがおすすめ。';
+      document.getElementById('recValue').textContent = '価値観型の流れでは、このモジュールが先。次にビジョン発掘へ進みます。';
+      document.getElementById('recVision').textContent = 'このモジュールも全員実施。価値観発掘のあとに進みます。';
+    } else {
+      document.getElementById('descVision').textContent += ' 今の診断傾向だと、こちらを先に進めるのがおすすめ。';
+      document.getElementById('recVision').textContent = 'ビジョン型の流れでは、このモジュールが先。次に価値観発掘へ進みます。';
+      document.getElementById('recValue').textContent = 'このモジュールも全員実施。ビジョン発掘のあとに進みます。';
+    }
   }
 
   let next = {
     order:'1st',
     title:'まずはタイプ診断から',
-    desc:'自己分析の入口。価値観型かビジョン型かの傾向を見て、次に進む順番を決めます。',
+    desc:'自己分析の入口。価値観型かビジョン型かの傾向を見て、次に進むおすすめ順を決めます。',
     href:'jikobunseki_type.html',
     label:'タイプ診断へ進む',
     note:'まだ入力データがありません。まずはタイプ診断からスタートしよう。'
   };
 
-  if(statuses.type && !statuses.value && typeDominant === 'value'){
+  if(statuses.type && typeDominant === 'value' && !statuses.value){
     next = {
       order:'2nd',
       title:'次は価値観発掘へ',
       desc:'価値観型寄りの流れなので、まずは「大切にしたいこと」を言葉にしていくのがおすすめ。',
       href:'jikobunseki_katikan.html',
       label:'価値観発掘へ進む',
-      note:'タイプ診断は完了済み。いまは価値観発掘から入るのが自然な進め方です。'
+      note:'4モジュールは全員実施。今は価値観発掘から入るのが自然な順番です。'
     };
-  } else if(statuses.type && !statuses.vision && typeDominant === 'vision'){
+  } else if(statuses.type && typeDominant === 'vision' && !statuses.vision){
     next = {
       order:'2nd',
       title:'次はビジョン発掘へ',
       desc:'ビジョン型寄りの流れなので、まずは将来像を描いてから価値観の整理に入るのが自然です。',
       href:'jikobunseki_vision.html',
       label:'ビジョン発掘へ進む',
-      note:'タイプ診断は完了済み。次は未来イメージの言語化がメインです。'
+      note:'4モジュールは全員実施。今はビジョン発掘から入るのが自然な順番です。'
     };
-  } else if(statuses.value && !statuses.vision){
+  } else if(statuses.type && statuses.value && !statuses.vision){
     next = {
       order:'3rd',
       title:'次はビジョン発掘へ',
       desc:'価値観発掘の内容をもとに、1年後・3年後・5年後のイメージへつなげていこう。',
       href:'jikobunseki_vision.html',
       label:'ビジョン発掘へ進む',
-      note:'価値観発掘は保存済み。その未来メモを引き継いで、ビジョン発掘に進めます。'
+      note:'価値観発掘は保存済み。次は将来像の言語化に進めます。'
+    };
+  } else if(statuses.type && statuses.vision && !statuses.value){
+    next = {
+      order:'3rd',
+      title:'次は価値観発掘へ',
+      desc:'ビジョン発掘で見えてきた将来像をもとに、自分が大切にしたい価値観を言葉にしていこう。',
+      href:'jikobunseki_katikan.html',
+      label:'価値観発掘へ進む',
+      note:'ビジョン発掘は保存済み。次は価値観発掘で土台を言語化します。'
     };
   } else if(statuses.value && statuses.vision && !statuses.company){
     next = {
@@ -499,13 +524,13 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   } else if(statuses.value && statuses.vision && statuses.company){
     next = {
       order:'Done',
-      title:'自己分析の主要3ページは完了',
+      title:'自己分析の4モジュールは完了',
       desc:'ここまで来たら、次は企業一覧や企業詳細ページとつなげて、実際の比較・管理に使うフェーズ。',
       href:'companies_list.html',
       label:'企業管理へつなげる',
       note:'自己分析の主要モジュールは完了済み。次は企業研究・選考管理に落としていこう。'
     };
-    document.getElementById('phaseChip').textContent = '自己分析フェーズ完了間近';
+    document.getElementById('phaseChip').textContent = '自己分析フェーズ完了';
   }
 
   document.getElementById('nextOrder').textContent = next.order;
