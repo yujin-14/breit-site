@@ -235,13 +235,13 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       <a class="nav-item" href="motivation.html"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>モチベ</span></a>
       <div class="nav-item disabled"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><span>PF</span></div>
     </div>
-    <div class="nav-tag mono">BREIT · MVP</div>
+    <div class="nav-tag mono">BREIT</div>
   </nav>
 
   <main>
     <div class="top-row">
       <div>
-        <div class="greeting-eyebrow">GOOD MORNING</div>
+        <div class="greeting-eyebrow">HOME</div>
         <h1 class="greeting">おかえりなさい</h1>
       </div>
       <div class="phase-chip"><span class="dot"></span>いま：<b>未設定</b>／就活フェーズ未設定</div>
@@ -297,12 +297,12 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
         <div class="cta">
           <div class="cta-eyebrow">自己分析</div>
-          <div class="progress-mini mono" id="saProgressMini">0 / 4 モジュール完了</div>
+          <div class="progress-mini mono" id="saProgressMini">0 / 4 ステップ完了</div>
           <div class="cta-title" id="saCtaTitle">まずはタイプ診断から進めよう</div>
-          <div class="cta-sub" id="saCtaSub">自己分析がまだ未着手なら、最初はタイプ診断で「価値観型寄り」か「ビジョン型寄り」かを見るのがおすすめ。</div>
+          <div class="cta-sub" id="saCtaSub">まだ自己分析がこれからなら、まずはタイプ診断から。自分に合う順番で進めやすくなります。</div>
           <div class="cta-meta">
-            <span class="cta-chip" id="saPrimaryChip">最重要価値観：未設定</span>
-            <span class="cta-chip" id="saTypeChip">診断結果：未保存</span>
+            <span class="cta-chip" id="saPrimaryChip">大切にしたいこと：これから見つける</span>
+            <span class="cta-chip" id="saTypeChip">診断結果：まだこれから</span>
           </div>
           <div style="height:14px"></div>
           <a class="cta-btn" id="saCtaBtn" href="jikobunseki_type.html">自己分析をはじめる →</a>
@@ -315,31 +315,31 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
               <div class="fw-status" id="fwTypeStatus"></div>
               <div class="fw-name">タイプ診断</div>
               <div class="fw-cta" id="fwTypeCta">未受診</div>
-              <div class="fw-sub" id="fwTypeSub">価値観型 / ビジョン型の傾向を出す入口。保存済みならここに結果が表示されます。</div>
+              <div class="fw-sub" id="fwTypeSub">まずは自分の考え方の傾向を知るための入口。答え終わると、結果がここに反映されます。</div>
             </div>
             <div class="fw-row">
               <div class="fw-status" id="fwValueStatus"></div>
               <div class="fw-name">価値観発掘</div>
               <div class="fw-cta" id="fwValueCta">未受診</div>
-              <div class="fw-sub" id="fwValueSub">人生で大切にしたい価値観を言語化するパート。</div>
+              <div class="fw-sub" id="fwValueSub">自分が大切にしたいことを言葉にして、就活の軸を見つけていくステップ。</div>
             </div>
             <div class="fw-row">
               <div class="fw-status" id="fwVisionStatus"></div>
               <div class="fw-name">ビジョン発掘</div>
               <div class="fw-cta" id="fwVisionCta">未受診</div>
-              <div class="fw-sub" id="fwVisionSub">1年後・3年後・5年後の将来像を整理するパート。</div>
+              <div class="fw-sub" id="fwVisionSub">1年後・3年後・5年後のイメージを言葉にして、進みたい方向を見つけるステップ。</div>
             </div>
             <div class="fw-row">
               <div class="fw-status" id="fwCompanyStatus"></div>
               <div class="fw-name">企業選びの価値観発掘</div>
               <div class="fw-cta" id="fwCompanyCta">ロック中</div>
-              <div class="fw-sub" id="fwCompanySub">仕事で重視したい価値観と、人生の価値観の共通点・相違点を比較するパート。</div>
+              <div class="fw-sub" id="fwCompanySub">企業選びで大事にしたいことを整理して、比べやすい軸にしていくステップ。</div>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-head"><div class="card-title">自己分析のメモ</div></div>
+          <div class="card-head"><div class="card-title">自己分析から見えてきたこと</div></div>
           <div class="insight-grid">
             <div class="insight-box">
               <div class="insight-label">最重要価値観</div>
@@ -355,7 +355,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
             </div>
             <div class="insight-box">
               <div class="insight-label">次にやること</div>
-              <div class="insight-body" id="insightNext">まずはタイプ診断から進めてみよう。</div>
+              <div class="insight-body" id="insightNext">まだ自己分析がこれからなら、まずはタイプ診断から。今の自分に合う進め方が見えてきます。</div>
             </div>
           </div>
         </div>
@@ -393,7 +393,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   };
 
   const doneCount = Object.values(status).filter(Boolean).length;
-  document.getElementById('saProgressMini').textContent = `${doneCount} / 4 モジュール完了`;
+  document.getElementById('saProgressMini').textContent = `${doneCount} / 4 ステップ完了`;
 
   function setFwStatus(id, mode){
     const el = document.getElementById(id);
@@ -407,10 +407,10 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
   let next = {
     title:'まずはタイプ診断から進めよう',
-    sub:'自己分析がまだ未着手なら、最初はタイプ診断で「価値観型寄り」か「ビジョン型寄り」かを見るのがおすすめ。',
+    sub:'まだ自己分析がこれからなら、まずはタイプ診断から。自分に合う順番で進めやすくなります。',
     href:'jikobunseki_type.html',
     label:'自己分析をはじめる →',
-    note:'まずはタイプ診断から進めてみよう。'
+    note:'まだ自己分析がこれからなら、まずはタイプ診断から。今の自分に合う進め方が見えてきます。'
   };
 
   if(typeResult){
@@ -439,7 +439,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       };
     }
   } else {
-    document.getElementById('saTypeChip').textContent = '診断結果：未保存';
+    document.getElementById('saTypeChip').textContent = '診断結果：まだこれから';
     setFwStatus('fwTypeStatus','');
     document.getElementById('fwTypeCta').textContent = '未受診';
   }
@@ -500,11 +500,11 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     document.getElementById('fwCompanySub').textContent = companyDraft.summary;
     document.getElementById('insightCompany').textContent = companyDraft.summary;
     next = {
-      title:'自己分析の主要モジュールは完了',
+      title:'自己分析の主なステップは完了',
       sub:'ここまで来たら、自己分析の結果を企業比較や志望動機づくりに落としていくフェーズ。企業一覧や企業詳細につなげると強いよ。',
       href:'jikobunseki.html',
       label:'自己分析ハブを見返す →',
-      note:'自己分析の主要モジュールは完了。次は企業研究への反映フェーズ。'
+      note:'自己分析の主なステップは完了。次は企業研究への反映フェーズ。'
     };
   } else if(status.value){
     setFwStatus('fwCompanyStatus','');

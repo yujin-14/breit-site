@@ -346,35 +346,35 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       </a>
       <a class="back-link" href="jikobunseki.html">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-        自己分析ハブに戻る
+        自己分析ページに戻る
       </a>
     </div>
 
-    <div class="eyebrow mono">SELF ANALYSIS / H2-4</div>
+    <div class="eyebrow mono">SELF ANALYSIS</div>
     <h1>企業選びの価値観発掘</h1>
     <p class="lead">
-      ここでは「人生で大切なこと」とは少し切り分けて、<b>働く上で何を重視したいか</b>を整理していくよ。<br>
-      似ているところも、ちょっとズレるところも、どっちも大事なヒント。自己分析4モジュールの最後で、企業比較に変換するパートです。
+      ここでは「人生で大切なこと」とは少し切り分けて、<b>働く上で何を重視したいか</b>を整理していきます。<br>
+      似ているところも、ちょっとズレるところも、どちらも大事なヒントです。ここでは、それを企業選びの軸に変えていきます。
     </p>
 
     <div class="flow-banner" id="flowBanner">
-      <span class="flow-chip">価値観発掘と比較しながら進行</span>
+      <span class="flow-chip">自己分析を見返しながら進める</span>
       <div class="flow-text">
-        すでに保存されている <b>人生の価値観</b> と、これから選ぶ <b>働く上での価値観</b> を並べて見比べられる設計です。
+        これまでに見えてきた大切にしたいことを見返しながら、働く上で大事にしたいことを整理できます。
       </div>
     </div>
 
     <div class="lock-banner" id="lockBanner">
-      <span class="lock-chip">比較ステップはロック中</span>
+      <span class="lock-chip">もう少し進むと使いやすくなります</span>
       <div class="lock-text">
-        このページの比較機能を使うには、先に <b>価値観発掘</b> の受診が必要だよ。<br>
-        下のリンクから先に進めてね → <a href="jikobunseki_katikan.html">価値観発掘へ</a>
+        先に <b>価値観発掘</b> を進めておくと、このページもより考えやすくなります。<br>
+        まだなら、下のリンクから先に進めます → <a href="jikobunseki_katikan.html">価値観発掘へ</a>
       </div>
     </div>
 
     <div class="progress-wrap">
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-label" id="progressLabel">0 / 6 STEP COMPLETED</div>
+      <div class="progress-label" id="progressLabel">0 / 6 ステップ完了</div>
     </div>
 
     <section class="card" data-step="1">
@@ -393,7 +393,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
           <input type="text" id="searchInput" placeholder="価値観ワードを検索">
         </div>
-        <div class="count-note">選択中 <span class="mono" id="selectedCount">0</span> / 5 件 / 最重要 <span class="mono" id="primaryValueLabel">未選択</span></div>
+        <div class="count-note">選択中 <span class="mono" id="selectedCount">0</span> / 5 件・いちばん大切 <span class="mono" id="primaryValueLabel">未選択</span></div>
       </div>
 
       <div class="value-grid" id="valueGrid"></div>
@@ -543,7 +543,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     </section>
 
     <div class="cta-row">
-      <button class="btn btn-ghost" id="saveDraftBtn">下書きを保存</button>
+      <button class="btn btn-ghost" id="saveDraftBtn">下書きを入力</button>
       <button class="btn btn-primary disabled" id="submitBtn">結果をまとめる</button>
     </div>
   </main>
@@ -727,7 +727,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
     lifeTags.innerHTML = state.lifeValues.length
       ? state.lifeValues.map(v => tagHtml(v, common.includes(v) ? 'common' : 'diff')).join('')
-      : '<div class="helper">価値観発掘の保存データがありません。</div>';
+      : '<div class="helper">価値観発掘の入力内容がありません。</div>';
 
     workTags.innerHTML = state.selectedValues.length
       ? state.selectedValues.map(v => tagHtml(v, common.includes(v) ? 'common' : 'diff')).join('')
@@ -874,7 +874,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     state.differenceReason = document.getElementById('differenceReason').value;
     state.avoidCompany = document.getElementById('avoidCompany').value;
     persist();
-    alert('下書きを保存しました');
+    alert('下書きを入力しました');
   });
 
   document.getElementById('submitBtn').addEventListener('click', () => {
@@ -884,7 +884,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     persist();
     renderResult();
     setTimeout(() => {
-      const go = confirm('結果を保存しました。自己分析ハブへ戻りますか？');
+      const go = confirm('結果を入力しました。自己分析ページへ戻りますか？');
       if(go) window.location.href = 'jikobunseki.html';
     }, 260);
   });

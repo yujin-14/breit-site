@@ -204,20 +204,20 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       <a class="nav-item" href="motivation.html"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>モチベ</span></a>
       <div class="nav-item disabled"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><span>PF</span></div>
     </div>
-    <div class="nav-tag mono">BREIT · MVP</div>
+    <div class="nav-tag mono">BREIT</div>
   </nav>
 
   <main>
     <div class="back-row">
-      <a class="back-link" href="jikobunseki.html"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>自己分析ハブへ戻る</a>
+      <a class="back-link" href="jikobunseki.html"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>自己分析ページへ戻る</a>
     </div>
     <div class="eyebrow">STEP 1</div>
     <h1>タイプ診断</h1>
-    <p class="lead">11個の質問に答えて、いまの自分が「価値観型寄り」か「ビジョン型寄り」かを見ていくページです。正解・不正解はないので、直感で選んでOK。</p>
+    <p class="lead">11個の質問に答えて、いまの自分が「価値観型寄り」か「ビジョン型寄り」かを見ていくページです。正解・不正解はないので、直感で選んで大丈夫です。</p>
 
     <div class="status-banner">
-      <div class="status-chip" id="statusChip">保存連携あり</div>
-      <div class="status-text" id="statusText">回答内容は保存できて、診断が完了すると <b>自己分析ハブ</b> に自動反映されます。途中まででも下書き保存OKです。</div>
+      <div class="status-chip" id="statusChip">入力連携あり</div>
+      <div class="status-text" id="statusText">答えた内容は途中でも残せて、診断が終わると <b>自己分析ページ</b> に反映されます。途中まででも一時入力できます。</div>
     </div>
 
     <div class="progress-wrap">
@@ -229,13 +229,13 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
     <div class="sticky-actions">
       <div class="action-wrap">
-        <button class="btn btn-ghost" id="saveDraftBtn">下書きを保存</button>
-        <button class="btn btn-primary" id="submitBtn">結果を保存して見る</button>
+        <button class="btn btn-ghost" id="saveDraftBtn">下書きを入力</button>
+        <button class="btn btn-primary" id="submitBtn">結果を入力して見る</button>
       </div>
     </div>
 
     <div class="result-panel" id="resultPanel">
-      <div class="result-eyebrow">RESULT</div>
+      <div class="result-eyebrow">診断結果</div>
       <div class="result-title" id="resultTitle">価値観型寄り</div>
       <div class="result-bar-track">
         <div id="resultBarA" style="background:var(--teal);width:50%"></div>
@@ -245,17 +245,17 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
         <span id="labelA">価値観型 50%</span>
         <span id="labelB">ビジョン型 50%</span>
       </div>
-      <div class="result-note" id="resultNote">ここに診断コメントが表示されます。</div>
+      <div class="result-note" id="resultNote">あなたの結果に合わせたコメントが、ここに表示されます。</div>
       <div class="result-actions">
         <a class="result-cta" id="nextCta" href="jikobunseki_katikan.html">次へ進む</a>
-        <a class="result-cta secondary" href="jikobunseki.html">自己分析ハブへ戻る</a>
+        <a class="result-cta secondary" href="jikobunseki.html">自己分析ページへ戻る</a>
       </div>
     </div>
   </main>
 </div>
 
 <script>
-const RESULT_KEY = 'shiori_type_result';
+const 診断結果_KEY = 'shiori_type_result';
 const DRAFT_KEY = 'shiori_type_draft';
 
 const questions = [
@@ -316,21 +316,21 @@ function saveDraft(showAlert = false){
     answeredCount: answers.filter(a => a !== null).length,
     updatedAt: new Date().toISOString()
   }));
-  if(showAlert) alert('下書きを保存しました');
+  if(showAlert) alert('下書きを入力しました');
 }
 
 function restoreSavedData(){
-  const result = readJson(RESULT_KEY);
+  const result = readJson(診断結果_KEY);
   const draft = readJson(DRAFT_KEY);
   const saved = (draft && Array.isArray(draft.answers) && draft.answers.some(Boolean)) ? draft : result;
   if(saved && Array.isArray(saved.answers)){
     saved.answers.forEach((v,i) => answers[i] = v || null);
     syncSelections();
     updateProgress();
-    document.getElementById('statusChip').textContent = result ? '保存済み診断あり' : '下書き保存あり';
+    document.getElementById('statusChip').textContent = result ? '入力済み診断あり' : '下書き入力あり';
     document.getElementById('statusText').innerHTML = result
       ? '前回の診断結果が見つかったので、内容を復元しています。回答を変えて <b>再診断</b> することもできます。'
-      : '途中保存された回答を復元しています。このまま続きを入力してOKです。';
+      : '途中入力された回答を復元しています。このまま続きを入力してOKです。';
     if(result && result.dominant){ renderResult(result, false); }
   }
 }
@@ -357,14 +357,14 @@ function getResultMessage(payload){
   if(payload.dominant === 'A'){
     return {
       title:'価値観型寄り',
-      note:'価値観型は、日々大切にしていることを積み上げていく中で納得感のあるキャリアを形成していくタイプです。\nまずは「価値観発掘」から、自分が大切にしたいことを言語化していくのがおすすめ。4モジュールは全員実施で、ここではおすすめ順だけが変わります。',
+      note:'価値観型は、日々大切にしていることを積み上げていく中で納得感のあるキャリアを形成していくタイプです。\nまずは「価値観発掘」から、自分が大切にしたいことを言語化していくのがおすすめ。ここでは、自分に合う進め方のヒントが見えてきます。',
       href:'jikobunseki_katikan.html',
       cta:'価値観発掘に進む →'
     };
   }
   return {
     title:'ビジョン型寄り',
-    note:'ビジョン型は、先に目指したい未来のイメージを描くことで行動しやすくなるタイプです。\nまずは「ビジョン発掘」から、1年後・3年後・5年後の将来像を言語化していくのがおすすめ。4モジュールは全員実施で、ここではおすすめ順だけが変わります。',
+    note:'ビジョン型は、先に目指したい未来のイメージを描くことで行動しやすくなるタイプです。\nまずは「ビジョン発掘」から、1年後・3年後・5年後の将来像を言語化していくのがおすすめ。ここでは、自分に合う進め方のヒントが見えてきます。',
     href:'jikobunseki_vision.html',
     cta:'ビジョン発掘に進む →'
   };
@@ -384,10 +384,10 @@ function renderResult(payload, save = true){
   resultPanel.style.display = 'block';
   resultPanel.scrollIntoView({behavior:'smooth', block:'start'});
   if(save){
-    localStorage.setItem(RESULT_KEY, JSON.stringify(payload));
+    localStorage.setItem(診断結果_KEY, JSON.stringify(payload));
     saveDraft();
-    document.getElementById('statusChip').textContent = '診断結果を保存しました';
-    document.getElementById('statusText').innerHTML = 'タイプ診断の結果は <b>自己分析ハブ</b> に反映されます。4モジュールは全員実施で、次はおすすめ順の最初のモジュールへ進めばOK。';
+    document.getElementById('statusChip').textContent = '診断結果を入力しました';
+    document.getElementById('statusText').innerHTML = 'タイプ診断の結果は <b>自己分析ページ</b> に反映されます。次は、今の自分に合う順番で次のページへ進めばOKです。';
   }
 }
 

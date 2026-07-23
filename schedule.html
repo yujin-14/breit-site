@@ -281,7 +281,7 @@ button.add-btn{border:none;cursor:pointer;}
       <a class="nav-item" href="motivation.html"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>モチベ</span></a>
       <div class="nav-item disabled"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><span>PF</span></div>
     </div>
-    <div class="nav-tag mono">BREIT · MVP</div>
+    <div class="nav-tag mono">BREIT</div>
   </nav>
 
   <main>
@@ -289,7 +289,7 @@ button.add-btn{border:none;cursor:pointer;}
       <div>
         <div class="eyebrow">SCHEDULE</div>
         <h1>予定管理</h1>
-        <p class="lead">やることを整理して、今日の一歩を迷わず進めるためのページです。自己分析で見えてきた軸や気になる企業とつなげながら、予定をわかりやすく管理できます。</p>
+        <p class="lead">やることを整理して、今日の一歩を迷わず進めるためのページです。自己分析で見えてきたことや気になる企業とつなげながら、予定をわかりやすく管理できます。</p>
       </div>
       <div class="top-actions">
         <button type="button" class="add-btn" id="openScheduleModal" onclick="openScheduleModal()">＋ 予定を追加</button>
@@ -314,7 +314,7 @@ button.add-btn{border:none;cursor:pointer;}
         <div class="section-head">
           <div>
             <div class="section-title">予定一覧</div>
-            <div class="section-sub" id="viewSub">予定を見やすく一覧で確認できます</div>
+            <div class="section-sub" id="viewSub">今日・今週の予定を、見やすくまとめて確認できます</div>
           </div>
         </div>
 
@@ -327,7 +327,7 @@ button.add-btn{border:none;cursor:pointer;}
           <div class="section-head">
             <div>
               <div class="section-title">次の一歩メモ</div>
-              <div class="section-sub">今の保存状況から、置くと良さそうな予定候補</div>
+              <div class="section-sub">いまの状況に合わせて、次に入れておくと進めやすい予定</div>
             </div>
           </div>
           <div class="mini-list" id="nextTaskList"></div>
@@ -336,8 +336,8 @@ button.add-btn{border:none;cursor:pointer;}
         <div class="card side-card" style="margin-bottom:18px;">
           <div class="section-head">
             <div>
-              <div class="section-title">企業比較とのつながり</div>
-              <div class="section-sub">自己分析データがあるほど、予定理由も具体化しやすい</div>
+              <div class="section-title">予定と自己分析のつながり</div>
+              <div class="section-sub">自己分析で見えてきたことがあるほど、「なんのための予定か」がはっきりしやすくなります。</div>
             </div>
           </div>
           <div id="fitList"></div>
@@ -346,8 +346,8 @@ button.add-btn{border:none;cursor:pointer;}
         <div class="card side-card">
           <div class="section-head">
             <div>
-              <div class="section-title">空欄チェック</div>
-              <div class="section-sub">未保存の項目があるなら先にここを埋めると強い</div>
+              <div class="section-title">先に整えておきたいこと</div>
+              <div class="section-sub">まだ途中の項目があるなら、ここから整えると動きやすくなります。</div>
             </div>
           </div>
           <div class="empty-box" id="emptyStateBox">未保存の項目を確認中…</div>
@@ -804,7 +804,7 @@ button.add-btn{border:none;cursor:pointer;}
     renderTimeline(filter);
     document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
     document.getElementById('timelineView').style.display = view === 'timeline' ? 'block' : 'none';
-    document.getElementById('viewSub').textContent = view === 'list' ? '予定を見やすく一覧で確認できます' : '流れで見たい時用のタイムライン表示';
+    document.getElementById('viewSub').textContent = view === 'list' ? '今日・今週の予定を、見やすくまとめて確認できます' : '流れで見たい時用のタイムライン表示';
   }
 
   document.getElementById('btnList').addEventListener('click', ()=>{

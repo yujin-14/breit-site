@@ -388,27 +388,26 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   <main>
     <a class="back-link" href="jikobunseki.html">
       <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-      自己分析ハブに戻る
+      自己分析ページに戻る
     </a>
 
-    <div class="eyebrow mono">SELF ANALYSIS / H2-2</div>
+    <div class="eyebrow mono">SELF ANALYSIS</div>
     <h1>価値観発掘</h1>
     <p class="lead">
-      「何を大切にしたいか」を言葉にしていくページです。おすすめ順があとでも、ここは全員が通る共通モジュール。<br>
+      「何を大切にしたいか」を言葉にしていくページです。<br>
       なんとなく大事だと思っていることを、カード選択と記述で少しずつ輪郭にしていきます。
     </p>
 
     <div class="path-banner">
       <span class="path-chip">タイプ診断の次</span>
       <div class="path-text">
-        ここで整理した価値観は、次の <b>ビジョン発掘</b> で将来像を言葉にするときの土台になります。
-        ビジョン型の人でも、このページはあとから必ず通る共通モジュールです。
+        ここで見えてきた大切なことは、次の <b>ビジョン発掘</b> にもつながっていきます。
       </div>
     </div>
 
     <div class="progress-wrap">
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-label" id="progressLabel">0 / 3 STEP COMPLETED</div>
+      <div class="progress-label" id="progressLabel">0 / 3 ステップ完了</div>
     </div>
 
     <section class="card" data-step="1">
@@ -442,7 +441,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <input type="text" id="searchInput" placeholder="価値観ワードを検索">
         </div>
         <div class="count-note">
-          選択中 <span class="mono" id="selectedCount">0</span> / 5 件 / 最重要 <span class="mono" id="primaryValueLabel">未選択</span>
+          選択中 <span class="mono" id="selectedCount">0</span> / 5 件・いちばん大切 <span class="mono" id="primaryValueLabel">未選択</span>
         </div>
       </div>
 
@@ -493,7 +492,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     </section>
 
     <div class="cta-row">
-      <button class="btn btn-ghost" id="saveDraftBtn">下書きを保存</button>
+      <button class="btn btn-ghost" id="saveDraftBtn">下書きを入力</button>
       <button class="btn btn-primary disabled" id="submitBtn">結果をまとめて、次へ進む</button>
     </div>
   </main>
@@ -752,7 +751,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   document.getElementById("saveDraftBtn").addEventListener("click", () => {
     state.q1 = document.getElementById("q1").value;
     saveDraft();
-    alert("下書きを保存しました");
+    alert("下書きを入力しました");
   });
 
   document.getElementById("submitBtn").addEventListener("click", () => {
@@ -763,7 +762,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
     setTimeout(() => {
       const nextLabel = getNextLabel();
-      const go = confirm(`結果を保存しました。次の『${nextLabel}』ページへ進みますか？`);
+      const go = confirm(`結果を入力しました。次の『${nextLabel}』ページへ進みますか？`);
       if (go) window.location.href = getNextHref();
     }, 250);
   });

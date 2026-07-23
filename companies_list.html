@@ -212,7 +212,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       <a class="nav-item" href="motivation.html"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>モチベ</span></a>
       <div class="nav-item disabled"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><span>PF</span></div>
     </div>
-    <div class="nav-tag mono">BREIT · MVP</div>
+    <div class="nav-tag mono">BREIT</div>
   </nav>
 
   <main>
@@ -226,36 +226,36 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     </div>
 
     <div class="phase-banner">
-      <span class="phase-chip">自己分析を企業比較に反映中</span>
-      <div class="phase-text">保存済みの <b>最重要価値観</b> と <b>企業選びの4分類</b> をもとに、一覧でも「合いそう / 要確認 / ミスマッチ注意」をざっくり見られるようにしています。</div>
+      <span class="phase-chip">自己分析を企業選びに活用中</span>
+      <div class="phase-text">自己分析で見えてきた価値観やビジョンをもとに、企業ごとの相性を見比べやすくしています。気になる企業を増やしながら、どこから深掘りするか決めていけます。</div>
     </div>
 
     <div class="summary-grid">
       <div class="summary-card">
         <div class="summary-label">最重要価値観</div>
         <div class="summary-main" id="summaryPrimary">未設定</div>
-        <div class="summary-sub">価値観発掘で保存した一番大事な軸</div>
+        <div class="summary-sub">自己分析で見えてきた、自分の土台になる考え方</div>
       </div>
       <div class="summary-card">
         <div class="summary-label">タイプ診断</div>
         <div class="summary-main" id="summaryType">未保存</div>
-        <div class="summary-sub">進め方の入り口になる傾向</div>
+        <div class="summary-sub">自分が考えやすい進め方のヒント</div>
       </div>
       <div class="summary-card">
         <div class="summary-label">企業選びのMust</div>
         <div class="summary-main" id="summaryMust">未設定</div>
-        <div class="summary-sub">絶対に必要な条件</div>
+        <div class="summary-sub">大事にしたい条件</div>
       </div>
       <div class="summary-card">
         <div class="summary-label">Deal Breaker</div>
         <div class="summary-main" id="summaryDeal">未設定</div>
-        <div class="summary-sub">絶対に避けたい条件</div>
+        <div class="summary-sub">できれば避けたい条件</div>
       </div>
     </div>
 
     <div class="insight-banner">
-      <span class="insight-chip">見方のヒント</span>
-      <div class="insight-text" id="insightText">自己分析データが保存されると、企業ごとに「どこが合いそうか」の見立てを一覧で出せます。まだ未保存なら、まずは自己分析から固めるのがおすすめ。</div>
+      <span class="insight-chip">企業一覧の見方</span>
+      <div class="insight-text" id="insightText">自己分析が進むほど、「なんとなく気になる」から「自分に合いそう」まで見分けやすくなります。まだ途中なら、自己分析を少し進めてから見返すのもおすすめです。</div>
     </div>
 
     <div class="toolbar">
@@ -273,7 +273,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
     <div class="table-card">
       <div class="t-head">
-        <div>企業名</div><div>現在のステップ</div><div>自己分析との相性</div><div>見立てメモ</div><div></div>
+        <div>企業名</div><div>現在のステップ</div><div>自己分析との相性</div><div>気づきメモ</div><div></div>
       </div>
       <div id="rows"></div>
     </div>
@@ -343,7 +343,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
   function evaluate(company){
     if(!companyValuesDraft?.summary){
-      return {level:'none', label:'未判定', reasons:['自己分析データがまだ不足'], score:0};
+      return {level:'none', label:'未判定', reasons:['まだ自己分析が途中です'], score:0};
     }
     let score = 0;
     const reasons = [];
@@ -368,7 +368,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     let level='mid', label='要確認';
     if(score >= 3){ level='good'; label='合いそう'; }
     else if(score <= -1){ level='bad'; label='ミスマッチ注意'; }
-    if(reasons.length === 0) reasons.push('追加の企業研究で見極めたい');
+    if(reasons.length === 0) reasons.push('もう少し調べながら見極めたい');
     return {level,label,reasons,score};
   }
 
@@ -388,7 +388,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       row.innerHTML = `
         <div class="company-block">
           <div class="company-name">${company.name}</div>
-          <div class="company-fit-note">直近の予定：<span class="next-date">${company.next === '—' ? '—' : company.next.replace(/(\d[^ ]*)/, '<span class="mono">$1</span>')}</span></div>
+          <div class="company-fit-note">次の予定：<span class="next-date">${company.next === '—' ? '—' : company.next.replace(/(\d[^ ]*)/, '<span class="mono">$1</span>')}</span></div>
         </div>
         <div><span class="step-pill ${company.stepClass}">${company.step}</span></div>
         <div><span class="fit-pill ${fit.level}">${fit.label}</span></div>

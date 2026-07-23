@@ -291,36 +291,36 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       </a>
       <a class="back-link" href="jikobunseki.html">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-        自己分析ハブに戻る
+        自己分析ページに戻る
       </a>
     </div>
 
-    <div class="eyebrow mono">SELF ANALYSIS / H2-3</div>
+    <div class="eyebrow mono">SELF ANALYSIS</div>
     <h1>ビジョン発掘</h1>
     <p class="lead">
       「将来どうなっていたいか」を、いきなり完璧に決めるページじゃないよ。<br>
-      おすすめ順が先でも後でも、ここは全員が通る共通モジュール。価値観や未来メモをヒントにしながら、1年後・3年後・5年後のイメージを少しずつ言葉にしていくページです。
+      価値観や未来メモをヒントにしながら、1年後・3年後・5年後のイメージを少しずつ言葉にしていくページです。
     </p>
 
     <div class="flow-banner">
-      <span class="flow-chip" id="flowChip">価値観発掘から連携中</span>
+      <span class="flow-chip" id="flowChip">前のページの内容を読み込み中</span>
       <div class="flow-text" id="flowText">
-        直前の <b>価値観発掘</b> で保存した内容を読み込んでいます。過去データに「その先にある未来」があれば、下書きヒントとして使えるようにしてあります。
+        前のページで書いた内容があると、ここでも見返しながら進められます。未来のイメージがある場合は、書き始めるヒントとして使えます。
       </div>
     </div>
 
     <div class="progress-wrap">
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-label" id="progressLabel">0 / 3 STEP COMPLETED</div>
+      <div class="progress-label" id="progressLabel">0 / 3 ステップ完了</div>
     </div>
 
     <section class="card" data-step="0">
       <div class="card-head">
         <div>
-          <div class="step-num">LINK</div>
-          <div class="card-title">価値観発掘から引き継いだメモ</div>
+          <div class="step-num">ヒント</div>
+          <div class="card-title">前のページから受け取ったメモ</div>
           <div class="card-sub">
-            ここは連携確認用。元データがあるときだけ表示され、最重要価値観や以前の未来メモを見返しながら進められます。
+            前のページの内容があるときだけ表示されます。大切にしたいことや前に書いたメモを見返しながら進められます。
           </div>
         </div>
       </div>
@@ -329,7 +329,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
         <div class="link-grid">
           <div class="mini-box">
             <div class="mini-label">最重要価値観</div>
-            <div class="mini-body" id="linkedPrimary">未連携</div>
+            <div class="mini-body" id="linkedPrimary">未引き継ぎ</div>
           </div>
           <div class="mini-box">
             <div class="mini-label">過去の未来メモ</div>
@@ -337,7 +337,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           </div>
         </div>
         <div class="mini-box">
-          <div class="mini-label">下書きヒント（編集OK）</div>
+          <div class="mini-label">書き始めヒント（編集OK）</div>
           <textarea id="seedMemo" placeholder="前のページからの未来メモがここに入ります。未入力なら、自分で書き始めてもOKです。"></textarea>
         </div>
         <div class="mini-box">
@@ -345,7 +345,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           <div class="mini-body soft" id="linkedSummary">まだ読み込まれていません</div>
         </div>
         <div class="copy-row">
-          <div class="helper">下書きメモは、1年後・3年後・5年後の欄にコピーして使えます。</div>
+          <div class="helper">書き始めメモは、1年後・3年後・5年後の欄にコピーして使えます。</div>
           <button class="mini-btn" type="button" id="applySeedAllBtn">3つの年次に反映する</button>
         </div>
       </div>
@@ -427,7 +427,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     <section class="result-panel" id="resultPanel">
       <h2 class="result-title">ビジョン発掘のまとめ</h2>
       <p class="result-lead">
-        将来イメージ・行動・その意味をひとつにまとめたよ。価値観発掘の内容とも連携した状態で保存できます。
+        将来イメージ・行動・その意味をひとつにまとめたよ。価値観発掘の内容とも引き継ぎした状態で入力できます。
       </p>
 
       <div class="summary-box">
@@ -462,7 +462,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     </section>
 
     <div class="cta-row">
-      <button class="btn btn-ghost" id="saveDraftBtn">下書きを保存</button>
+      <button class="btn btn-ghost" id="saveDraftBtn">書き始めを入力</button>
       <button class="btn btn-primary disabled" id="submitBtn">結果をまとめて、次へ進む</button>
     </div>
   </main>
@@ -519,8 +519,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     }
 
     document.getElementById('linkedPrimary').textContent = state.linkedPrimary || '未設定';
-    document.getElementById('linkedAction').textContent = state.linkedLegacyFuture || 'まだ保存されていません';
-    document.getElementById('linkedSummary').textContent = state.linkedSummary || 'まだ保存されていません';
+    document.getElementById('linkedAction').textContent = state.linkedLegacyFuture || 'まだ入力されていません';
+    document.getElementById('linkedSummary').textContent = state.linkedSummary || 'まだ入力されていません';
     document.getElementById('seedMemo').value = state.seedMemo;
   }
 
@@ -676,7 +676,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     state.meaning = document.getElementById('meaning').value;
     state.seedMemo = document.getElementById('seedMemo')?.value || state.seedMemo;
     persist();
-    alert('下書きを保存しました');
+    alert('書き始めを入力しました');
   });
 
   document.getElementById('submitBtn').addEventListener('click', () => {
@@ -687,7 +687,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     persist();
     renderResult();
     setTimeout(() => {
-      const go = confirm(`結果を保存しました。次の「${getNextLabel()}」ページへ進みますか？`);
+      const go = confirm(`結果を入力しました。次の「${getNextLabel()}」ページへ進みますか？`);
       if(go) window.location.href = getNextHref();
     }, 260);
   });

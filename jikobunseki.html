@@ -229,17 +229,17 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       <a class="nav-item" href="motivation.html"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>モチベ</span></a>
       <div class="nav-item disabled"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><span>PF</span></div>
     </div>
-    <div class="nav-tag mono">BREIT · MVP</div>
+    <div class="nav-tag mono">BREIT</div>
   </nav>
 
   <main>
     <div class="eyebrow">JIKOBUNSEKI</div>
     <h1>自己分析</h1>
-    <p class="lead">タイプ診断・価値観発掘・ビジョン発掘・企業選びの価値観発掘を、ひとつの流れで見返せるページです。いまどこまで進んでいるかと、次にやることがひと目でわかるように整えています。</p>
+    <p class="lead">タイプ診断・価値観発掘・ビジョン発掘・企業選びの価値観発掘を、ひとつの流れで見返せるページです。いまどこまで進んでいるかと、次にやることがひと目でわかるようにしています。</p>
 
     <div class="concept-quote">
       このツールのゴールは、<b>「向いている仕事を決めつけること」ではなく、自分の価値観と将来像を言語化して、納得感のある意思決定ができる状態をつくること</b>。<br>
-      進み方は、タイプ診断の結果や入力済みデータに応じて少しずつ変わります。
+      進み方は、タイプ診断の結果や入力済み内容に応じて少しずつ変わります。
     </div>
 
     <section class="top-grid">
@@ -247,7 +247,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
         <div class="hero-head">
           <div>
             <div class="hero-title">進行状況</div>
-            <div class="hero-sub">自己分析4モジュールの進み具合をまとめています。保存済みデータがあると、自動で反映されます。</div>
+            <div class="hero-sub">自己分析4ステップの進み具合をまとめています。入力済み内容があると、自動で反映されます。</div>
           </div>
           <div class="chip teal" id="phaseChip">自己分析フェーズ進行中</div>
         </div>
@@ -255,7 +255,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
         <div class="hero-metrics">
           <div class="metric">
             <div class="metric-num" id="doneCount">0</div>
-            <div class="metric-label">完了モジュール数 / 4</div>
+            <div class="metric-label">完了ステップ数 / 4</div>
           </div>
           <div class="metric">
             <div class="metric-num" id="percentNum">0%</div>
@@ -263,16 +263,16 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
           </div>
           <div class="metric">
             <div class="metric-num" id="nextOrder">1st</div>
-            <div class="metric-label">次におすすめのステップ</div>
+            <div class="metric-label">次にやると良さそうなこと</div>
           </div>
         </div>
 
         <div class="bar-track"><div class="bar-fill" id="progressFill"></div></div>
-        <div class="hero-note" id="heroNote">まだ入力データがありません。まずはタイプ診断からスタートしよう。</div>
+        <div class="hero-note" id="heroNote">まだ入力内容がありません。まずはタイプ診断からスタートしよう。</div>
       </div>
 
       <div class="next-card">
-        <div class="next-label">NEXT STEP</div>
+        <div class="next-label">次にやること</div>
         <div class="next-title" id="nextTitle">まずはタイプ診断から</div>
         <div class="next-desc" id="nextDesc">自己分析の入口。価値観型かビジョン型かの傾向を見て、次に進む順番を決めます。</div>
         <div class="btn-row">
@@ -284,8 +284,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
     <section class="summary-card">
       <div class="summary-head">
-        <div class="summary-title">いま見えている自己分析メモ</div>
-        <div class="chip amber" id="summaryChip">保存データを要約表示</div>
+        <div class="summary-title">自己分析で見えてきたこと</div>
+        <div class="chip amber" id="summaryChip">入力した内容をここで見返せます</div>
       </div>
       <div class="summary-grid">
         <div class="mini">
@@ -294,11 +294,11 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
         </div>
         <div class="mini">
           <div class="mini-label">ビジョンサマリー</div>
-          <div class="mini-body soft" id="miniVision">まだ保存されていません</div>
+          <div class="mini-body soft" id="miniVision">まだ入力されていません</div>
         </div>
         <div class="mini">
           <div class="mini-label">企業選びの軸</div>
-          <div class="mini-body soft" id="miniCompany">まだ保存されていません</div>
+          <div class="mini-body soft" id="miniCompany">まだ入力されていません</div>
         </div>
       </div>
     </section>
@@ -311,8 +311,8 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
             <div class="module-title">タイプ診断</div>
             <div class="status-tag" id="statusType">未受診</div>
           </div>
-          <div class="module-desc">11問の質問から、あなたが価値観型・ビジョン型どちらの傾向が強いかを見て、進め方の入口をつくるパート。</div>
-          <div class="module-result" id="resultType">まだ診断データがありません。保存済みの診断結果がある場合は、ここに自動反映されます。</div>
+          <div class="module-desc">11問の質問から、自分がどんな順番で考えやすいかを知る入口です。</div>
+          <div class="module-result" id="resultType">まだ診断結果はありません。終わると、ここに自動で反映されます。</div>
         </div>
       </a>
 
@@ -324,7 +324,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
             <div class="status-tag" id="statusValue">未受診</div>
           </div>
           <div class="module-desc" id="descValue">人生において大切にしたい価値観を、コアバリューカードから見つけていくパートです。</div>
-          <div class="module-result" id="resultValue">まだ保存されていません。</div>
+          <div class="module-result" id="resultValue">まだ入力されていません。</div>
           <div class="rec-note" id="recValue"></div>
         </div>
       </a>
@@ -337,7 +337,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
             <div class="status-tag" id="statusVision">未受診</div>
           </div>
           <div class="module-desc" id="descVision">1年後・3年後・5年後の将来像を言語化して、「どんな状態を目指したいか」を整理するパートです。</div>
-          <div class="module-result" id="resultVision">まだ保存されていません。</div>
+          <div class="module-result" id="resultVision">まだ入力されていません。</div>
           <div class="rec-note" id="recVision"></div>
         </div>
       </a>
@@ -349,9 +349,9 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
             <div class="module-title">企業選びの価値観発掘</div>
             <div class="status-tag" id="statusCompany">ロック中</div>
           </div>
-          <div class="module-desc">「働く上で」大切にしたい価値観を整理し、人生の価値観との共通点・相違点を比較します。</div>
-          <div class="module-result" id="resultCompany">価値観発掘が保存されると、比較導線が強くなります。</div>
-          <div class="lock-note" id="lockNoteCompany"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>比較機能を使うには、先に「価値観発掘」と「ビジョン発掘」の両方が必要です</span></div>
+          <div class="module-desc">働く上で大切にしたいことを整理して、企業選びに使える軸にしていくパートです。</div>
+          <div class="module-result" id="resultCompany">価値観発掘とビジョン発掘が進むと、ここで企業選びの軸をまとめやすくなります。</div>
+          <div class="lock-note" id="lockNoteCompany"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>このページは、価値観発掘とビジョン発掘が進んでくると、より使いやすくなります</span></div>
         </div>
       </a>
     </div>
@@ -388,15 +388,15 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   document.getElementById('progressFill').style.width = `${percent}%`;
 
   document.getElementById('miniPrimary').textContent = valueDraft?.primaryValue || '未設定';
-  document.getElementById('miniVision').textContent = visionDraft?.summary || 'まだ保存されていません';
-  document.getElementById('miniCompany').textContent = companyDraft?.summary || 'まだ保存されていません';
+  document.getElementById('miniVision').textContent = visionDraft?.summary || 'まだ入力されていません';
+  document.getElementById('miniCompany').textContent = companyDraft?.summary || 'まだ入力されていません';
 
   function setStatus(id, mode){
     const el = document.getElementById(id);
     el.className = `status-tag ${mode}`;
     if(mode === 'done') el.textContent = '完了';
     if(mode === 'todo') el.textContent = '未受診';
-    if(mode === 'partial') el.textContent = '途中保存';
+    if(mode === 'partial') el.textContent = '途中入力';
     if(mode === 'lock') el.textContent = 'ロック中';
   }
 
@@ -427,24 +427,24 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
 
   setStatus('statusValue', statuses.value ? 'done' : (valuePartial ? 'partial' : 'todo'));
   const valueBadge = badgeLabel('value', statuses.value, valuePartial); setBadge('badgeValue', valueBadge.mode, valueBadge.label);
-  document.getElementById('resultValue').textContent = valueDraft?.summary || (valuePartial ? '下書き保存あり。まだ最終まとめ前です。' : 'まだ保存されていません。');
+  document.getElementById('resultValue').textContent = valueDraft?.summary || (valuePartial ? '下書き入力あり。まだ最終まとめ前です。' : 'まだ入力されていません。');
 
   setStatus('statusVision', statuses.vision ? 'done' : (visionPartial ? 'partial' : 'todo'));
   const visionBadge = badgeLabel('vision', statuses.vision, visionPartial); setBadge('badgeVision', visionBadge.mode, visionBadge.label);
-  document.getElementById('resultVision').textContent = visionDraft?.summary || (visionPartial ? '下書き保存あり。まだ最終まとめ前です。' : 'まだ保存されていません。');
+  document.getElementById('resultVision').textContent = visionDraft?.summary || (visionPartial ? '下書き入力あり。まだ最終まとめ前です。' : 'まだ入力されていません。');
 
   if(companyDraft){
     setStatus('statusCompany', statuses.company ? 'done' : 'partial');
     const companyBadge = badgeLabel('company', statuses.company, companyPartial); setBadge('badgeCompany', companyBadge.mode, companyBadge.label);
     document.getElementById('moduleCompany').classList.remove('locked');
-    document.getElementById('resultCompany').textContent = companyDraft.summary || '下書き保存あり。まだ最終まとめ前です。';
+    document.getElementById('resultCompany').textContent = companyDraft.summary || '下書き入力あり。まだ最終まとめ前です。';
     document.getElementById('lockNoteCompany').style.display = 'none';
   } else if(statuses.value && statuses.vision) {
     setStatus('statusCompany','todo');
     const companyBadge = badgeLabel('company', false, false); setBadge('badgeCompany', companyBadge.mode, companyBadge.label);
     document.getElementById('moduleCompany').classList.remove('locked');
     document.getElementById('resultCompany').textContent = '価値観発掘とビジョン発掘の結果を使って、仕事選びの軸を比較できる状態です。';
-    document.getElementById('lockNoteCompany').innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg><span>価値観発掘とビジョン発掘の保存データあり。比較ステップに進めます</span>';
+    document.getElementById('lockNoteCompany').innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg><span>価値観発掘とビジョン発掘の入力内容あり。比較ステップに進めます</span>';
   } else {
     setStatus('statusCompany','lock');
     const companyBadge = badgeLabel('company', false, false); setBadge('badgeCompany', companyBadge.mode, companyBadge.label);
@@ -458,12 +458,12 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   if(typeDraft){
     if(typeDominant === 'value'){
       document.getElementById('descValue').textContent += ' 今の診断傾向だと、こちらを先に進めるのがおすすめ。';
-      document.getElementById('recValue').textContent = '価値観型の流れでは、このモジュールが先。次にビジョン発掘へ進みます。';
-      document.getElementById('recVision').textContent = 'このモジュールも全員実施。価値観発掘のあとに進みます。';
+      document.getElementById('recValue').textContent = '価値観型の流れでは、このステップが先。次にビジョン発掘へ進みます。';
+      document.getElementById('recVision').textContent = 'このステップも全員実施。価値観発掘のあとに進みます。';
     } else {
       document.getElementById('descVision').textContent += ' 今の診断傾向だと、こちらを先に進めるのがおすすめ。';
-      document.getElementById('recVision').textContent = 'ビジョン型の流れでは、このモジュールが先。次に価値観発掘へ進みます。';
-      document.getElementById('recValue').textContent = 'このモジュールも全員実施。ビジョン発掘のあとに進みます。';
+      document.getElementById('recVision').textContent = 'ビジョン型の流れでは、このステップが先。次に価値観発掘へ進みます。';
+      document.getElementById('recValue').textContent = 'このステップも全員実施。ビジョン発掘のあとに進みます。';
     }
   }
 
@@ -473,7 +473,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
     desc:'自己分析の入口。価値観型かビジョン型かの傾向を見て、次に進むおすすめ順を決めます。',
     href:'jikobunseki_type.html',
     label:'タイプ診断へ進む',
-    note:'まだ入力データがありません。まずはタイプ診断からスタートしよう。'
+    note:'まだ入力内容がありません。まずはタイプ診断からスタートしよう。'
   };
 
   if(statuses.type && typeDominant === 'value' && !statuses.value){
@@ -483,7 +483,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       desc:'価値観型寄りの流れなので、まずは「大切にしたいこと」を言葉にしていくのがおすすめ。',
       href:'jikobunseki_katikan.html',
       label:'価値観発掘へ進む',
-      note:'4モジュールは全員実施。今は価値観発掘から入るのが自然な順番です。'
+      note:'4つの自己分析を無理なく進めるために、今は価値観発掘から入るのがおすすめです。'
     };
   } else if(statuses.type && typeDominant === 'vision' && !statuses.vision){
     next = {
@@ -492,7 +492,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       desc:'ビジョン型寄りの流れなので、まずは将来像を描いてから価値観の整理に入るのが自然です。',
       href:'jikobunseki_vision.html',
       label:'ビジョン発掘へ進む',
-      note:'4モジュールは全員実施。今はビジョン発掘から入るのが自然な順番です。'
+      note:'4つの自己分析を無理なく進めるために、今はビジョン発掘から入るのがおすすめです。'
     };
   } else if(statuses.type && statuses.value && !statuses.vision){
     next = {
@@ -501,7 +501,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       desc:'価値観発掘の内容をもとに、1年後・3年後・5年後のイメージへつなげていこう。',
       href:'jikobunseki_vision.html',
       label:'ビジョン発掘へ進む',
-      note:'価値観発掘は保存済み。次は将来像の言語化に進めます。'
+      note:'価値観発掘は入力済み。次は将来像の言語化に進めます。'
     };
   } else if(statuses.type && statuses.vision && !statuses.value){
     next = {
@@ -510,7 +510,7 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
       desc:'ビジョン発掘で見えてきた将来像をもとに、自分が大切にしたい価値観を言葉にしていこう。',
       href:'jikobunseki_katikan.html',
       label:'価値観発掘へ進む',
-      note:'ビジョン発掘は保存済み。次は価値観発掘で土台を言語化します。'
+      note:'ビジョン発掘は入力済み。次は価値観発掘で土台を言語化します。'
     };
   } else if(statuses.value && statuses.vision && !statuses.company){
     next = {
@@ -524,11 +524,11 @@ th,td{padding:14px 15px !important;line-height:1.8 !important;}
   } else if(statuses.value && statuses.vision && statuses.company){
     next = {
       order:'Done',
-      title:'自己分析の4モジュールは完了',
+      title:'自己分析の4つのステップは完了',
       desc:'ここまで来たら、次は企業一覧や企業詳細ページとつなげて、実際の比較・管理に使うフェーズ。',
       href:'companies_list.html',
       label:'企業管理へつなげる',
-      note:'自己分析の主要モジュールは完了済み。次は企業研究・選考管理に落としていこう。'
+      note:'自己分析の主要ステップは完了済み。次は企業研究・選考管理に落としていこう。'
     };
     document.getElementById('phaseChip').textContent = '自己分析フェーズ完了';
   }
